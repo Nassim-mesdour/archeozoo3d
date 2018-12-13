@@ -1,14 +1,16 @@
 var camera, controls, scene, renderer, canvas, canvas_container, texture, gridHelper,
-gui, customContainer, face1, face1, face2, face3, face4, face5, face12, face13, face14, face15, 
-plane1, plane2, plane3, plane4, plane5, plane12, plane13, plane14, plane15, 
+gui, customContainer, 
+holeGeo, holePlane,
+holeBaseGeo, holeBasePlane,
+groundGeo, groundPlane,
 groupHole = new THREE.Group();
 	init();
 	animate();
 
 	function init() {
 		// chargement des textures 
-		texture = new THREE.TextureLoader().load("../images/ground1.jpg"); 
-		texture3 = new THREE.TextureLoader().load("../images/hall_ground.jpg");
+		texture = new THREE.TextureLoader().load("../images/hall_ground.jpg"); 
+		texture3 = new THREE.TextureLoader().load("../images/hall_ground.png");
 		
 		canvas = document.getElementById('renderer');
 		canvas_container = document.getElementsByClassName('renderer_container');
@@ -22,7 +24,7 @@ groupHole = new THREE.Group();
 		renderer = new THREE.WebGLRenderer({canvas:canvas,antialias: true,clearAlpha:1});
 		renderer.setSize( canvas_container[0].clientWidth, canvas_container[0].clientHeight );
 		camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 4000 );
-		camera.position.set( 2000, 800, 0 );
+		camera.position.set( 800, 800, 0 );
 		// controls
 		controls = new THREE.OrbitControls( camera, canvas );
 		//controls.addEventListener( 'change', render ); // call this only in static scenes (i.e., if there is no animation loop)
@@ -45,10 +47,12 @@ groupHole = new THREE.Group();
 		scene.add( light );
 		gridHelper = new THREE.GridHelper( 800, 20, 0xffffff, 0xffffff );
 		scene.add( gridHelper );
+		scene.add(groupHole);
 
 		gui = new dat.GUI({ autoPlace: false } );
 		customContainer = document.getElementById('gui-container');
 		customContainer.appendChild(gui.domElement);
+
 	}
 	function animate() {
 		requestAnimationFrame( animate );
@@ -92,7 +96,7 @@ groupHole = new THREE.Group();
 
 
 
-	var state = {
+	var styeleState = {
 		subMenu : false },
 		menuDevlop = document.getElementById('menu-devlop'),
 		closeEditor = document.getElementById('enable'),
@@ -104,8 +108,8 @@ groupHole = new THREE.Group();
 	// show and hide controls elements    
 	menuDevlop.addEventListener('click',function(){
 		var i=0;
-		for(i ; i < 6 ; i++){
-			if(state.subMenu){
+		for(i ; i < controlsElemLft.length ; i++){
+			if(styeleState.subMenu){
 				(function(i){
 					setTimeout(function(){
 						dragElementLeftIn(i);
@@ -132,25 +136,25 @@ groupHole = new THREE.Group();
 			}
 	
 		}
-		state.subMenu = !state.subMenu ;
+		styeleState.subMenu = !styeleState.subMenu ;
 		function dragElementLeftOut(i){
-			document.getElementsByClassName('sub_menu_lft').item(i).setAttribute(
+			controlsElemLft.item(i).setAttribute(
 				"style","transform: translate(0px)"
 			);
 		}
 		function dragElementLeftIn(i){
-			document.getElementsByClassName('sub_menu_lft').item(i).setAttribute(
+			controlsElemLft.item(i).setAttribute(
 				"style","transform: translate(-72px);"
 			);
 		}
 	
 		function dragElementRightOut(i){ 
-			document.getElementsByClassName('sub_menu_top').item(i).setAttribute(
+			controlsElemTop.item(i).setAttribute(
 				"style","transform: translate(0px,0px)"
 			);
 		}
 		function dragElementRightIn(i){
-			document.getElementsByClassName('sub_menu_top').item(i).setAttribute(
+			controlsElemTop.item(i).setAttribute(
 				"style","transform: translate(0px,-72px);"
 			);
 		}
@@ -207,6 +211,10 @@ groupHole = new THREE.Group();
 
 
 var  imageHole=['geometry.png','cylinder.png','triangle.png'],
+sceneState = {
+	holeType : "",
+	noHole : true
+}
 editor = document.getElementsByClassName('editor').item(0),
 controlsElemLft = document.getElementsByClassName('sub_menu_lft'),
 randomString = (length = 6, chars='0123456789abcdefghijklmnopqrstuvwxyz') => {
@@ -220,71 +228,94 @@ randomString = (length = 6, chars='0123456789abcdefghijklmnopqrstuvwxyz') => {
 /* choose hole type */
 holeType = (e,item) => {
 	closeHoleSelector();
-	if(scene.getObjectByName('hole') !== undefined){
+	if(scene.getObjectByName(item) !== undefined & sceneState.holeType === item){
+		console.log('je renvoie rien');
 		return;
 	}
-	groupHole.scale.set(1,1,1);
-	groupHole.name = "hole";
-	scene.add(groupHole);
-	if(!gui.__folders.Hole){
-		var hole = gui.addFolder('Hole');
-			hole.add(groupHole.scale, 'x', 0, 10).name('Width').listen();
-			hole.add(groupHole.scale, 'y', 0, 5).name('Depth').listen();
-			hole.add(groupHole.scale, 'z', 0, 10).name('Height').listen();
+	sceneState.holeType = item;
+	
+	var i = groupHole.children.length -1;
+	for(i ; i>=0 ; i--){
+		groupHole.remove(groupHole.children[i]);
+		console.log(i);
 	}
 
-	face1 = new THREE.PlaneGeometry(300, 200, 0, 0);
-	face1.translate(0, 100, -200);
-	plane1 = new THREE.Mesh(face1, new THREE.MeshPhongMaterial({map: texture3, opacity: 0.9, transparent: true, side: THREE.DoubleSide}));
-	groupHole.add(plane1);
+	groupHole.scale.set(1,1,1);
+	groupHole.name = item;
+	if(gui.__folders['hole'] !== undefined) gui.removeFolder(gui.__folders['hole']);
 
-	face2 = new THREE.PlaneGeometry(300, 200, 0, 0);
-	face2.translate(0, 100, 200);
-	plane2 = new THREE.Mesh(face2, new THREE.MeshPhongMaterial({map: texture3, opacity: 0.9, transparent: true, side: THREE.DoubleSide}));
-	groupHole.add(plane2);
 
-	face3 = new THREE.PlaneGeometry(400, 200, 0, 0);
-	face3.translate(0, 100, 150);
-	face3.rotateY(Math.PI * -0.5);
-	plane3 = new THREE.Mesh(face3, new THREE.MeshPhongMaterial({map: texture3, opacity: 0.9, transparent: true, side: THREE.DoubleSide}));
-	groupHole.add(plane3);
+	var hole = gui.addFolder('hole');
+		hole.add(groupHole.scale, 'x', 0, 10).name('Width').listen();
+		hole.add(groupHole.scale, 'y', 0, 5).name('Depth').listen();
+		hole.add(groupHole.scale, 'z', 0, 10).name('Height').listen();
 
-	face4 = new THREE.PlaneGeometry(400, 200, 0, 0);
-	face4.translate(0, 100, 150);
-	face4.rotateY(Math.PI * 0.5);
-	plane4 = new THREE.Mesh(face4, new THREE.MeshPhongMaterial({map: texture3, opacity: 0.9, transparent: true, side: THREE.DoubleSide}));
-	groupHole.add(plane4);
 
-	face5 = new THREE.PlaneGeometry(300, 400, 0, 0);
-	face5.translate(0, 0, 0);
-	face5.rotateX(Math.PI * 0.5);
-	plane5 = new THREE.Mesh(face5, new THREE.MeshPhongMaterial({map: texture3, opacity: 0.9, transparent: true, side: THREE.DoubleSide}));
-	groupHole.add(plane5);
+	switch (item) {
+		case "geometry.png":
+			console.log("addBoxGeometry");
+			holeBaseGeo = new THREE.CircleBufferGeometry(200,4);
+			holeBaseGeo.rotateX(Math.PI * -0.5);
+			holeBaseGeo.rotateY(Math.PI * 0.75);
+			holeBasePlane = new THREE.Mesh(holeBaseGeo, new THREE.MeshPhongMaterial({map: texture3, opacity: 0.9, transparent: true, side: THREE.DoubleSide}) );
+			groupHole.add(holeBasePlane);
+			
+			holeGeo = new THREE.CylinderBufferGeometry(200, 200, 100, 4, 0, true);
+			holeGeo.rotateY(Math.PI * 0.75);
+			holeGeo.translate(0,50,0);
+			holePlane = new THREE.Mesh(holeGeo, new THREE.MeshPhongMaterial({map: texture3, opacity: 0.9, transparent: true, side: THREE.DoubleSide}) );
+			groupHole.add(holePlane);
 
-	// // la terre
-	// face12 = new THREE.PlaneGeometry(1100, 400, 0, 0);
-	// face12.translate(0, 400, -100);
-	// face12.rotateX(Math.PI * 0.5);
-	// plane12 = new THREE.Mesh(face12, new THREE.MeshPhongMaterial({map: texture, side: THREE.DoubleSide}));
-	// groupGround.add(plane12);
+			groundGeo = new THREE.RingBufferGeometry( 200, 400, 4 );
+			groundGeo.translate(0,0,100);
+			groundGeo.rotateX(Math.PI * -0.5);
+			groundGeo.rotateY(Math.PI * 0.75);
+			groundPlane = new THREE.Mesh( groundGeo, new THREE.MeshPhongMaterial({map: texture, side: THREE.DoubleSide}) );
+			groupHole.add( groundPlane );		
 
-	// face13 =  new THREE.PlaneGeometry(1100, 400, 0, 0);
-	// face13.translate(0, -400, -100);
-	// face13.rotateX(Math.PI * 0.5);
-	// plane13 = new THREE.Mesh(face13, new THREE.MeshPhongMaterial({map: texture, side: THREE.DoubleSide}));
-	// groupGround.add(plane13);
+		break;
+		case "cylinder.png":
+			console.log("addCylinder");
+			holeBaseGeo = new THREE.CircleBufferGeometry( 200, 128 );
+			holeBaseGeo.rotateX(Math.PI * 0.5);
+			cylBasePlane = new THREE.Mesh(holeBaseGeo, new THREE.MeshPhongMaterial({map: texture3, opacity: 0.9, transparent: true, side: THREE.DoubleSide}) );
+			groupHole.add(cylBasePlane);
 
-	// face14 =  new THREE.PlaneGeometry(400, 400, 0, 0);
-	// face14.translate(350, 0, -100);
-	// face14.rotateX(Math.PI * 0.5);
-	// plane14 = new THREE.Mesh(face14, new THREE.MeshPhongMaterial({map: texture, side: THREE.DoubleSide}));
-	// groupGround.add(plane14);
+			holeGeo = new THREE.CylinderBufferGeometry( 200, 200, 100, 64 ,0,true);
+			holeGeo.translate(0,50,0);	
+			holePlane = new THREE.Mesh(holeGeo, new THREE.MeshPhongMaterial({map: texture3, opacity: 0.9, transparent: true, side: THREE.DoubleSide}) );
+			groupHole.add(holePlane);
 
-	// face15 =  new THREE.PlaneGeometry(400, 400, 0, 0);
-	// face15.translate(-350, 0, -100);
-	// face15.rotateX(Math.PI * 0.5);
-	// plane15 = new THREE.Mesh(face15, new THREE.MeshPhongMaterial({map: texture, side: THREE.DoubleSide}));
-	// groupGround.add(plane15);
+			groundGeo = new THREE.RingBufferGeometry( 200, 400, 30 );
+			groundGeo.translate(0,0,100);
+			groundGeo.rotateX(Math.PI * -0.5);
+			groundPlane = new THREE.Mesh(groundGeo, new THREE.MeshPhongMaterial({map: texture, side: THREE.DoubleSide}) );
+			groupHole.add(groundPlane);
+		break;
+		case "triangle.png":
+			holeBaseGeo = new THREE.CircleBufferGeometry( 200, 3 );
+			holeBaseGeo.rotateX(Math.PI * 0.5);
+			holeBaseGeo.translate(-50,0,0)
+			holeBasePlane = new THREE.Mesh(holeBaseGeo, new THREE.MeshPhongMaterial({map: texture3, opacity: 0.9, transparent: true, side: THREE.DoubleSide}) );
+			groupHole.add(holeBasePlane);
+
+			holeGeo = new THREE.CylinderBufferGeometry( 200, 200, 100, 3 ,0,true);
+			holeGeo.rotateY(Math.PI * -0.167);
+			holeGeo.translate(-50,50,0);
+			holePlane = new THREE.Mesh(holeGeo, new THREE.MeshPhongMaterial({map: texture3, opacity: 0.9, transparent: true, side: THREE.DoubleSide}) );
+			groupHole.add(holePlane);
+
+			groundGeo = new THREE.RingBufferGeometry( 200, 400, 3 );
+			groundGeo.translate(-50,0,100);
+			groundGeo.rotateX(Math.PI * -0.5);
+			groundPlane = new THREE.Mesh( groundGeo, new THREE.MeshPhongMaterial({map: texture, side: THREE.DoubleSide}) );
+			groupHole.add( groundPlane );
+		break;
+	
+		default:
+			break;
+	}
+	
 }
 
 /* hole selector interface */
