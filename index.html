@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>ArcheooZoo3D</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" media="screen" href="css/style.css" />
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+    <script src="build/dat.gui.min.js"></script>
+    <script src="build/three.min.js"></script>
+    <script src="examples/controls/OrbitControls.js"></script>
+    <script src="examples/objects/Sky.js"></script>
+</head>
+<body>
+
+    <!-- Canvas Three js -->
+
+    <!-- topbar ! -->
+    <div class="topbar">
+        <div>
+            <p>ArcheoZoo3D</p>
+        </div>
+    </div>
+
+
+    <!-- side bar top! -->
+    <div class="sidebar_top">
+        <div class="flex-container">
+            <div class="sub_menu_top">
+                <i class="fa fa-lightbulb"></i>
+            </div>
+            </div>                    
+        </div>
+    </div>
+
+    <!-- side bar -->
+
+    <div class="sidebar">
+        <div class="flex-container">
+            <div id="menu-devlop">
+                <i class="fa fa-ellipsis-h"></i>
+            </div>
+            <div id="add_hole" class="sub_menu_lft">
+                <i class="fa fa-plus"></i>
+            </div>
+            </div>                    
+        </div>
+    </div>
+
+    <!-- canvas for 3D threeJs -->
+    <div class="renderer_container">
+        <canvas id="renderer"></canvas>
+    </div>
+
+    <div class='editor'>
+        <i id="enable" class="fa fa-times-circle"></i>
+    </div>
+
+    <div id="gui-container">
+
+    </div>
+    <script src="js/main.js"></script>
+</body>
+</html>
