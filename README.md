@@ -1,6 +1,6 @@
 # archeozoo3d
 
-Archeozoo3d editor
+Archeozoo3d editor is build in javascript with **Three.js library**
 
 ## Getting Started
 
@@ -17,5 +17,6 @@ npm start
 Open a Web Browser, ans navigate to this local adresse :  _localhost:3000_
 
 **enjoy**
+
 
 MIT
