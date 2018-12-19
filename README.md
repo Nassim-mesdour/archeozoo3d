@@ -6,7 +6,7 @@ Archeozoo3d editor is build in javascript with **Three.js library**
 
 - you have Node.js and npm installed on your machine, if not please download it here => [Node.js](https://nodejs.org/en/).
 
-Note : (when you download Node.js, you automatically get npm installed on your computer).
+* **Note** : (when you download Node.js, you automatically get npm installed on your computer).
 
 ## Getting Started
 
