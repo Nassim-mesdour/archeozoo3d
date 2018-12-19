@@ -14,6 +14,8 @@ cd archeozoo3d
 npm install --save
 npm start
 ```
-Open the archeozoo3d editor on _localhost:3000_
+Open a Web Browser, ans navigate to this local adresse :  _localhost:3000_
+
+**enjoy**
 
 MIT
