@@ -63,9 +63,12 @@ animate(); //boucle infinit pour l'animation 3D de la scene
 		light2.angle = Math.PI;
 		scene.add(light2);
 
-
+                //AxesHelper
+		var axesHelper = new THREE.AxesHelper( 500 );
 		//Grid Helper pour la scene
+		
 		gridHelper = new THREE.GridHelper( 1400, 10, 0x505050, 0x505050 );
+		gridHelper.add(axesHelper);
 		gridHelper.add(groupHole);
 		gridHelper.add(groupBones);
 		scene.add(gridHelper);
