@@ -453,7 +453,9 @@
 		}
 
 		function boneFolderEditor (bone){
-			var prams = {color: 0xff0000}
+			var prams = {
+				color: 0xff0000
+			}
 			var boneFolder = gui.addFolder(bone.name);
 			    boneFolder.open();
 			boneFolder.add(bone.scale, 'x', 0.1, 5).name('Scale').onChange(function(value){
@@ -465,6 +467,9 @@
 				//var hex = colorObj.getHexString();
 				var css = colorObj.getStyle();
 				bone.material.color.set(css);
+			})
+			boneFolder.add(controlObject, 'mode', { Translate: "translate", Rotate: "rotate" } ).onChange(function(value){
+				controlObject.setMode(value);
 			})
 			objectSatate = {
 				objectSlected : bone.name 
