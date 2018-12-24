@@ -5,7 +5,6 @@ body {
 
 .sidebar{
   position: absolute;
-  z-index: 400;
   top: 10px;
   left: 20px;
   width: 60px;
@@ -13,7 +12,6 @@ body {
 
 .sidebar_top{
   position: absolute;
-    z-index: 400;
     top: 10px;
     left: 70px;
     width: 360px;
@@ -21,7 +19,6 @@ body {
 
 .topbar{
   position: absolute;
-  z-index: 400;
   right: 20px;
   top: 20px;
   height: auto;
@@ -57,6 +54,7 @@ body {
   box-shadow: 0 0 2px 2px #ffffff;
   cursor: pointer;
   transform: translate(-72px);
+  transition :  0.2s ease-in;
 }
 
 .flex-container .sub_menu_top{
@@ -70,6 +68,7 @@ body {
   box-shadow: 0 0 2px 2px #ffffff;
   cursor: pointer;
   transform: translate(0,-72px);
+  transition :  0.2s ease-in;
 }
 
 .flex-container #menu-devlop{
@@ -80,19 +79,16 @@ body {
   color: #fff;
   border-radius: 26px;
   padding: 8px 0;
-  box-shadow: 0 0 2px 2px #ffffff;
   cursor: pointer;
+  transition : 0.2s ease;
 }
 
-.flex-container >div{
-  transition: all 0.2s ease-out;
-}
 
-.flex-container > div:hover{
-  -ms-transform: scale(1.2, 1.2); /* IE 9 */
-  -webkit-transform: scale(1.2, 1.2); /* Safari */
-  transform: scale(1.2, 1.2);
-}
+.flex-container >div:hover{
+  -moz-transform: scale(1.2);
+  -webkit-transform: scale(1.2);
+  transform: scale(1.2);
+} 
 
 .flex-container i{
   font-size: 23px;
@@ -105,15 +101,15 @@ body {
 
 .renderer_container{
   position: absolute;
-  top: 0px;
+  z-index: -1;
+  top: 0;
   right: 0;
-  left: 0px;
+  left: 0;
   bottom: 0; 
 }
 
 .renderer_container canvas{
   position: absolute;
-  width: 100% !important;
   height: auto !important;
 }
 
@@ -197,6 +193,26 @@ body {
 /* gui overStyle */
 #gui-container { 
   position: absolute; 
+  z-index: 10;
   top: 50px; 
   right: 20px; 
+}
+
+/* controls ojects */
+
+.control-container{
+  position: absolute;
+  top: 50px;
+  right: 20px;
+  bottom: 0;
+}
+
+.control-container #controls-object{
+  position: relative;
+  width: 245px;
+  height: 100%;
+  background: #000000cc;
+  transition: 0.2s ease;
+  transform: scale(0,1);
+  visibility: hidden;
 }
