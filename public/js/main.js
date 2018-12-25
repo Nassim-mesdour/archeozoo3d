@@ -6,7 +6,7 @@
 		objects=[];
 		var groupHole = new THREE.Group(); groupHole.name = 'Hole';
 		var groupBones = new THREE.Group(); groupBones.name = 'Bones';
-		var dragControls,
+		//var dragControls, // à supprimer
 		manager = new THREE.LoadingManager();
 		manager.onProgress = function ( url, itemsLoaded, itemsTotal ) {
 			console.log( 'Loading file: ' + url + '.\nLoaded ' + itemsLoaded + ' of ' + itemsTotal + ' files.' );
@@ -81,16 +81,16 @@
 			gridHelper.add(axesHelper);
 			scene.add(gridHelper);
 
-
+			// !!!!!!! a supprimer
 			//Stop orbit control when draging objects 
-			dragControls = new THREE.DragControls( objects, camera, canvas );
-			dragControls.addEventListener( 'dragstart', function () {
-				controls.enabled = false;
-			},false);
+			// dragControls = new THREE.DragControls( objects, camera, canvas );
+			// dragControls.addEventListener( 'dragstart', function () {
+			// 	controls.enabled = false;
+			// },false);
 
-			dragControls.addEventListener( 'dragend', function () {
-				controls.enabled = true;
-			},false);
+			// dragControls.addEventListener( 'dragend', function () {
+			// 	controls.enabled = true;
+			// },false);
 	
 			
 			//Objects Controls 
@@ -436,6 +436,8 @@
 			var intersects = raycaster.intersectObjects( objects );
 			if ( intersects.length > 0 ) {
 				controlObject.attach(intersects[ 0 ].object);
+				onBoneSelect(intersects[0].object);
+				console.log(intersects[ 0 ].object.material.color);
 			}
 		}
 
