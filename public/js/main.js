@@ -244,7 +244,6 @@
 		holeType = (e,item) => {
 			closeHoleSelector();
 			if(scene.getObjectByName(item) !== undefined & sceneState.holeType === item){
-				console.log('Hole Already in place');
 				return;
 			}
 			sceneState.holeType = item;
@@ -252,7 +251,6 @@
 			var i = groupHole.children.length -1;
 			for(i ; i>=0 ; i--){
 				groupHole.remove(groupHole.children[i]);
-				console.log(i);
 			}
 
 			groupHole.scale.set(1,1,1);
@@ -422,7 +420,6 @@
 			if ( intersects.length > 0 ) {
 				controlObject.attach(intersects[0].object);
 				onBoneSelect(intersects[0].object);
-				console.log(intersects[ 0 ].object.material.color);
 				//intersects[ 0 ].object.material.color.setHex( Math.random() * 0xffffff );
 			}
 		}
@@ -437,14 +434,13 @@
 			if ( intersects.length > 0 ) {
 				controlObject.attach(intersects[ 0 ].object);
 				onBoneSelect(intersects[0].object);
-				console.log(intersects[ 0 ].object.material.color);
+				console.log(intersects[0].object)
 			}
 		}
 
 		function onBoneSelect (bone){
 			if(gui.__folders[objectSatate.objectSlected] !== undefined & gui.__folders[objectSatate.objectSlected] === bone.name){
 				return;
-
 			}else if(gui.__folders[objectSatate.objectSlected] !== undefined & gui.__folders[objectSatate.objectSlected] !== bone.name){
 				gui.removeFolder(gui.__folders[objectSatate.objectSlected]);
 				boneFolderEditor(bone);
@@ -454,6 +450,7 @@
 
 		}
 
+		// Bones editor
 		function boneFolderEditor (bone){
 			var prams = {
 				color: 0xff0000
