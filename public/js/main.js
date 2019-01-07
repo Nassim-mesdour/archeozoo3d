@@ -496,12 +496,12 @@
 				var SelectedBones = new THREE.Group();
 				SelectedBones.name = 'SelectedBones';
 
+
 			break;
 
 			default : console.log(event);
 		}
 	})
-
 
 
 
