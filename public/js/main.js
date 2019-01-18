@@ -71,11 +71,12 @@
 
 			
 			//AxesHelper
-			var axesHelper = new THREE.AxesHelper( 800 );
+			var axesHelper = new THREE.AxesHelper( 600 );
 			axesHelper.name = 'axesHelper';
 			//Grid Helper pour la scene
-			gridHelper = new THREE.GridHelper( 1400, 10, 0x505050, 0x505050 );
+			gridHelper = new THREE.GridHelper( 1200, 12, 0x505050, 0x505050 );
 			gridHelper.name = 'gridHelper';
+			gridHelper.scale.set(1,1,1);
 			gridHelper.add(groupHole);
 			gridHelper.add(groupBones);
 			gridHelper.add(axesHelper);
@@ -259,9 +260,9 @@
 
 
 			var hole = gui.addFolder('hole');
-				hole.add(groupHole.scale, 'x', 0, 10).name('Width').listen();
-				hole.add(groupHole.scale, 'y', 0, 5).name('Depth').listen();
-				hole.add(groupHole.scale, 'z', 0, 10).name('Height').listen();
+				hole.add(groupHole.scale, 'x', 0, 6).name('Width').listen();
+				hole.add(groupHole.scale, 'y', 0, 6).name('Depth').listen();
+				hole.add(groupHole.scale, 'z', 0, 6).name('Height').listen();
 			hole.open;
 
 			switch (item) {
@@ -490,7 +491,7 @@
 //___Bones_Selection______________________________________________________________________
 //////////////////////////////////////////////////////////////////////////////////////////
 
-	window.addEventListener('keydown',function(event){
+	window.addEventListener('click',function(event){
 		switch ( event.keyCode ){
 			case 17 :
 				var SelectedBones = new THREE.Group();
@@ -502,8 +503,6 @@
 			default : console.log(event);
 		}
 	})
-
-
 
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -518,7 +517,7 @@
 #
 #
 */
-//________________________________________________________________________________________
+//___Scene_Exporter_______________________________________________________________________
 //////////////////////////////////////////////////////////////////////////////////////////
 
 
