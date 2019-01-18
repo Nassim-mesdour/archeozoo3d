@@ -233,8 +233,8 @@
 		sceneState = {
 			holeType : ""
 		}
-		editor = document.getElementsByClassName('editor').item(0),
-		controlsElemLft = document.getElementsByClassName('sub_menu_lft')
+		editor = document.getElementsByClassName('editor').item(0);
+		var addHole = document.getElementById('add_hole');
 		randomString = (length = 6, chars='0123456789abcdefghijklmnopqrstuvwxyz') => {
 			var result = '_';
 			for (var i = length; i > 0; --i) result += chars[Math.floor(Math.random() * chars.length)];
@@ -366,7 +366,7 @@
 		}
 
 		/* on add hole click */
-		controlsElemLft.item(0).addEventListener('click',() => openHoleSelector(),false)
+		addHole.addEventListener('click',() => openHoleSelector(),false)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 //________________________________________________________________________________________
@@ -402,7 +402,7 @@
 					
 					//if ( child.isMesh ) child.material.map = texture;
 				} );
-				scene.add( object );
+				gridHelper.add( object );
 			}
 			reader.readAsText(file);
 			closeEditor.click();
@@ -521,8 +521,43 @@
 //////////////////////////////////////////////////////////////////////////////////////////
 
 
+var exporter = new THREE.OBJExporter();
+var exportScene = document.getElementById('export_scene');
+
+exportScene.addEventListener('click',exportOBJ,false)
+
+function exportOBJ() {
+	var result = exporter.parse(gridHelper);
+	saveString( result, 'scene.obj' );
+}
+
+var link = document.createElement( 'a' );
+link.style.display = 'none';
+document.body.appendChild( link );
+function save( blob, filename ) {
+	link.href = URL.createObjectURL( blob );
+	link.download = filename;
+	link.click();
+}
+function saveString( text, filename ) {
+	save( new Blob( [ text ], { type: 'text/plain' } ), filename );
+}
 
 
+//////////////////////////////////////////////////////////////////////////////////////////
+//________________________________________________________________________________________
+/*
+#
+#
+#
+#
+#
+#
+#
+#
+*/
+//________________________________________________________________________________________
+//////////////////////////////////////////////////////////////////////////////////////////
 
 // load json models 
 // var loader = new THREE.ObjectLoader();
