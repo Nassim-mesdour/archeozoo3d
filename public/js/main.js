@@ -31,12 +31,13 @@
 
 			//scene
 			scene = new THREE.Scene();
-			scene.background = new THREE.Color( 0xE5E5E5 );
+			scene.background = new THREE.Color( 11184810 );
 
 			//renderer
-			renderer = new THREE.WebGLRenderer({canvas:canvas,antialias: true,clearAlpha:1});
+			renderer = new THREE.WebGLRenderer({canvas:canvas,antialias: true,clearAlpha:0});
+			renderer.setPixelRatio( window.devicePixelRatio );
 			renderer.setSize( canvas_container[0].clientWidth, canvas_container[0].clientHeight );
-			camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 4000 );
+			camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 1, 4000 );
 			camera.position.set( 800, 800, 0 );
 			
 			// controls
@@ -45,7 +46,7 @@
 			controls.dampingFactor = 0.80;
 			controls.screenSpacePanning = false;
 			controls.minDistance = 10;
-			controls.maxDistance = 2000;
+			controls.maxDistance = 3000;
 			controls.maxPolarAngle = Math.PI;
 
 			
@@ -74,9 +75,9 @@
 			var axesHelper = new THREE.AxesHelper( 600 );
 			axesHelper.name = 'axesHelper';
 			//Grid Helper pour la scene
-			gridHelper = new THREE.GridHelper( 1200, 12, 0x505050, 0x505050 );
+			gridHelper = new THREE.GridHelper( 1200,12 );
 			gridHelper.name = 'gridHelper';
-			gridHelper.scale.set(1,1,1);
+			//gridHelper.scale.set(1,1,1);
 			gridHelper.add(groupHole);
 			gridHelper.add(groupBones);
 			gridHelper.add(axesHelper);
@@ -521,16 +522,16 @@
 //////////////////////////////////////////////////////////////////////////////////////////
 
 
-var exporter = new THREE.OBJExporter();
+//var exporter = new THREE.SceneExporter();
 var exportScene = document.getElementById('export_scene');
 
 exportScene.addEventListener('click',exportOBJ,false)
 
 function exportOBJ() {
-	var result = exporter.parse(gridHelper);
-	saveString( result, 'scene.obj' );
+	//var result = exporter.parse(scene);
+	var json = gridHelper.toJSON();
+	saveString( json, 'scene.json' );
 }
-
 var link = document.createElement( 'a' );
 link.style.display = 'none';
 document.body.appendChild( link );
@@ -540,7 +541,7 @@ function save( blob, filename ) {
 	link.click();
 }
 function saveString( text, filename ) {
-	save( new Blob( [ text ], { type: 'text/plain' } ), filename );
+	save( new Blob( [JSON.stringify(text, null, 2)] , { type: 'application/json' } ), filename );
 }
 
 
