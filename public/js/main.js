@@ -14,13 +14,65 @@
 		manager.onError = function ( url ) {
 			console.log( 'There was an error loading ' + url );
 		};
-		var loader = new THREE.OBJLoader(manager);
 
+//////////////////////////////////////////////////////////////////////////////////////////
+//________________________________________________________________________________________
+/*
+#
+#
+#
+#
+#
+#
+#
+#
+*/
+//__Load project__________________________________________________________________________
+//////////////////////////////////////////////////////////////////////////////////////////
+
+	var _loadProject = document.getElementById('project');
+	_loadProject.addEventListener('change',
+	
+	function(){
+		scene.remove(scene.getObjectByName('gridHelper'));
+		objects=[];
+		var file = this.files[0];
+		var reader = new FileReader();
+		reader.onloadend = function(e) {
+			var loader = new THREE.ObjectLoader();
+			var result = reader.result;
+			resultJson = JSON.parse(result);
+			var object = loader.parse(resultJson);
+
+			object.traverse( function ( child ) {
+				objects.push(child);
+				
+				//if ( child.isMesh ) child.material.map = texture;
+			} );
+			scene.add( object );
+		}
+		reader.readAsText(file);
+	},false);
+
+//////////////////////////////////////////////////////////////////////////////////////////
+//________________________________________________________________________________________
+/*
+#
+#
+#
+#
+#
+#
+#
+#
+*/
+//__Load project__________________________________________________________________________
+//////////////////////////////////////////////////////////////////////////////////////////
 
 		init(); //préparer la scene 
 		animate(); //boucle infinit pour l'animation 3D de la scene
 
-		function init() {
+		function init(a) {
 			// chargement des textures 
 			texture = new THREE.TextureLoader().load("../images/hall_ground.jpg"); 
 			texture3 = new THREE.TextureLoader().load("../images/hall_ground.png");
@@ -77,7 +129,6 @@
 			//Grid Helper pour la scene
 			gridHelper = new THREE.GridHelper( 1200,12 );
 			gridHelper.name = 'gridHelper';
-			//gridHelper.scale.set(1,1,1);
 			gridHelper.add(groupHole);
 			gridHelper.add(groupBones);
 			gridHelper.add(axesHelper);
@@ -103,12 +154,12 @@
 			//resize canvas on windowsResize
 			window.addEventListener( 'resize', onWindowResize, false );
 		}
-		function onWindowResize() {
+		function onWindowResize(){
 			camera.aspect = window.innerWidth / window.innerHeight;
 			camera.updateProjectionMatrix();
 			renderer.setSize( window.innerWidth, window.innerHeight );
 		}
-		function animate() {
+		function animate(){
 			requestAnimationFrame( animate );
 			controls.update(); // only required if controls.enableDamping = true, or if controls.autoRotate = true
 			renderer.render( scene, camera );
@@ -280,16 +331,8 @@
 					holeGeo.translate(0,50,0);
 					holePlane = new THREE.Mesh(holeGeo, new THREE.MeshPhongMaterial({map: texture3, opacity: 0.9, transparent: true, side: THREE.DoubleSide}) );
 					groupHole.add(holePlane);
-
-					groundGeo = new THREE.RingBufferGeometry( 200, 400, 4 );
-					groundGeo.translate(0,0,100);
-					groundGeo.rotateX(Math.PI * -0.5);
-					groundGeo.rotateY(Math.PI * 0.75);
-					groundPlane = new THREE.Mesh( groundGeo, new THREE.MeshPhongMaterial({map: texture, side: THREE.DoubleSide}) );
-					groupHole.add( groundPlane );
-					
-
 				break;
+
 				case "cylinder.png":
 					console.log("addCylinder");
 					holeBaseGeo = new THREE.CircleBufferGeometry( 200, 128 );
@@ -301,13 +344,8 @@
 					holeGeo.translate(0,50,0);	
 					holePlane = new THREE.Mesh(holeGeo, new THREE.MeshPhongMaterial({map: texture3, opacity: 0.9, transparent: true, side: THREE.DoubleSide}) );
 					groupHole.add(holePlane);
-
-					groundGeo = new THREE.RingBufferGeometry( 200, 400, 30 );
-					groundGeo.translate(0,0,100);
-					groundGeo.rotateX(Math.PI * -0.5);
-					groundPlane = new THREE.Mesh(groundGeo, new THREE.MeshPhongMaterial({map: texture, side: THREE.DoubleSide}) );
-					groupHole.add(groundPlane);
 				break;
+
 				case "triangle.png":
 					holeBaseGeo = new THREE.CircleBufferGeometry( 200, 3 );
 					holeBaseGeo.rotateX(Math.PI * 0.5);
@@ -320,12 +358,6 @@
 					holeGeo.translate(-50,50,0);
 					holePlane = new THREE.Mesh(holeGeo, new THREE.MeshPhongMaterial({map: texture3, opacity: 0.9, transparent: true, side: THREE.DoubleSide}) );
 					groupHole.add(holePlane);
-
-					groundGeo = new THREE.RingBufferGeometry( 200, 400, 3 );
-					groundGeo.translate(-50,0,100);
-					groundGeo.rotateX(Math.PI * -0.5);
-					groundPlane = new THREE.Mesh( groundGeo, new THREE.MeshPhongMaterial({map: texture, side: THREE.DoubleSide}) );
-					groupHole.add( groundPlane );
 				break;
 			
 				default:
@@ -529,7 +561,7 @@ exportScene.addEventListener('click',exportOBJ,false)
 
 function exportOBJ() {
 	//var result = exporter.parse(scene);
-	var json = gridHelper.toJSON();
+	var json = groupHole.toJSON();
 	saveString( json, 'scene.json' );
 }
 var link = document.createElement( 'a' );

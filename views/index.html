@@ -13,8 +13,7 @@
     <script src="examples/controls/DragControls.js"></script>
 	<script src="examples/controls/TrackballControls.js"></script>
 	<script src="examples/controls/TransformControls.js"></script>
-    <script src="examples/loaders/OBJLoader.js"></script>
-    <script src="examples/exporters/OBJExporter.js"></script>
+    <!-- <script src="examples/exporters/OBJExporter.js"></script> -->
 </head>
 <body>
 
@@ -33,10 +32,11 @@
         <div class="flex-container">
             <div class="sub_menu_top">
                 <i class="fa fa-bone"></i>
-                <input type="file" name="Bones" id="Bones" accept=".obj">
+                <input class="upload" type="file" name="Bones" id="Bones" accept=".obj">
             </div>
             <div id="import_scene" class="sub_menu_top">
                 <i class="fa fa-upload"></i>
+                <input class="upload" type="file" name="project" id="project" accept=".json">
             </div>               
         </div>
     </div>
