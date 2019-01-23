@@ -14,7 +14,6 @@
 		manager.onError = function ( url ) {
 			console.log( 'There was an error loading ' + url );
 		};
-
 //////////////////////////////////////////////////////////////////////////////////////////
 //________________________________________________________________________________________
 /*
@@ -34,7 +33,7 @@
 	_loadProject.addEventListener('change',
 	
 	function(){
-		scene.remove(scene.getObjectByName('gridHelper'));
+		//scene.remove(scene.getObjectByName('gridHelper'));
 		objects=[];
 		var file = this.files[0];
 		var reader = new FileReader();
@@ -43,15 +42,27 @@
 			var result = reader.result;
 			resultJson = JSON.parse(result);
 			var object = loader.parse(resultJson);
-
-			object.traverse( function ( child ) {
+			console.log(object);
+			object.children[1].traverse( function ( child ) {
 				objects.push(child);
-				
 				//if ( child.isMesh ) child.material.map = texture;
-			} );
-			scene.add( object );
+			});
+			//init();
+			//console.log(object.children[0])
+			groupHole.copy(object.children[0]);
+			groupBones.copy(object.children[1]);
+			//animate();
 		}
 		reader.readAsText(file);
+
+		if(gui.__folders['hole'] !== undefined) gui.removeFolder(gui.__folders['hole']);
+
+		var hole = gui.addFolder('hole');
+			hole.add(groupHole.scale, 'x', 1, 6).name('Width').listen();
+			hole.add(groupHole.scale, 'y', 1, 6).name('Depth').listen();
+			hole.add(groupHole.scale, 'z', 1, 6).name('Height').listen();
+		hole.open;
+
 	},false);
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -312,40 +323,50 @@
 
 
 			var hole = gui.addFolder('hole');
-				hole.add(groupHole.scale, 'x', 0, 6).name('Width').listen();
-				hole.add(groupHole.scale, 'y', 0, 6).name('Depth').listen();
-				hole.add(groupHole.scale, 'z', 0, 6).name('Height').listen();
+				hole.add(groupHole.scale, 'x', 1, 6).name('Width').listen();
+				hole.add(groupHole.scale, 'y', 1, 6).name('Depth').listen();
+				hole.add(groupHole.scale, 'z', 1, 6).name('Height').listen();
 			hole.open;
 
 			switch (item) {
 				case "geometry.png":
 					console.log("addBoxGeometry");
-					holeBaseGeo = new THREE.CircleBufferGeometry(200,4);
-					holeBaseGeo.rotateX(Math.PI * -0.5);
-					holeBaseGeo.rotateY(Math.PI * 0.75);
+					holeBaseGeo = new THREE.CircleBufferGeometry(141.4213562373095,4,Math.PI * 0.75);
 					holeBasePlane = new THREE.Mesh(holeBaseGeo, new THREE.MeshPhongMaterial({map: texture3, opacity: 0.9, transparent: true, side: THREE.DoubleSide}) );
+					holeBasePlane.rotateX(Math.PI * -0.5);
 					groupHole.add(holeBasePlane);
 					
-					holeGeo = new THREE.CylinderBufferGeometry(200, 200, 100, 4, 0, true);
-					holeGeo.rotateY(Math.PI * 0.75);
-					holeGeo.translate(0,50,0);
+					holeGeo = new THREE.CylinderBufferGeometry(141.4213562373095, 141.4213562373095, 100, 4, 0, true,Math.PI * 0.75);
 					holePlane = new THREE.Mesh(holeGeo, new THREE.MeshPhongMaterial({map: texture3, opacity: 0.9, transparent: true, side: THREE.DoubleSide}) );
+					holePlane.translateY(50);
 					groupHole.add(holePlane);
-				break;
+					console.log('bonjout tous le monde')
 
+					groundGeo = new THREE.RingBufferGeometry( 141.4213562373095, 400,4, 1,Math.PI * 0.75);
+					groundPlane = new THREE.Mesh( groundGeo, new THREE.MeshPhongMaterial({map: texture, side: THREE.DoubleSide}) );
+					groundPlane.translateY(100);
+					groundPlane.rotateX(Math.PI * -0.5);	
+					groupHole.add( groundPlane );
+					
+				break;
 				case "cylinder.png":
 					console.log("addCylinder");
 					holeBaseGeo = new THREE.CircleBufferGeometry( 200, 128 );
-					holeBaseGeo.rotateX(Math.PI * 0.5);
 					cylBasePlane = new THREE.Mesh(holeBaseGeo, new THREE.MeshPhongMaterial({map: texture3, opacity: 0.9, transparent: true, side: THREE.DoubleSide}) );
+					cylBasePlane.rotateX(Math.PI * 0.5);
 					groupHole.add(cylBasePlane);
 
 					holeGeo = new THREE.CylinderBufferGeometry( 200, 200, 100, 64 ,0,true);
-					holeGeo.translate(0,50,0);	
 					holePlane = new THREE.Mesh(holeGeo, new THREE.MeshPhongMaterial({map: texture3, opacity: 0.9, transparent: true, side: THREE.DoubleSide}) );
+					holePlane.translateY(50)
 					groupHole.add(holePlane);
+					
+					groundGeo = new THREE.RingBufferGeometry( 200, 400, 30 );
+					groundPlane = new THREE.Mesh(groundGeo, new THREE.MeshPhongMaterial({map: texture, side: THREE.DoubleSide}) );
+					groundPlane.translateY(100);
+					groundPlane.rotateX(Math.PI * -0.5);
+					groupHole.add(groundPlane);
 				break;
-
 				case "triangle.png":
 					holeBaseGeo = new THREE.CircleBufferGeometry( 200, 3 );
 					holeBaseGeo.rotateX(Math.PI * 0.5);
@@ -358,6 +379,12 @@
 					holeGeo.translate(-50,50,0);
 					holePlane = new THREE.Mesh(holeGeo, new THREE.MeshPhongMaterial({map: texture3, opacity: 0.9, transparent: true, side: THREE.DoubleSide}) );
 					groupHole.add(holePlane);
+
+					// groundGeo = new THREE.RingBufferGeometry( 200, 400, 3 );
+					// groundGeo.translate(-50,0,100);
+					// groundGeo.rotateX(Math.PI * -0.5);
+					// groundPlane = new THREE.Mesh( groundGeo, new THREE.MeshPhongMaterial({map: texture, side: THREE.DoubleSide}) );
+					// groupHole.add( groundPlane );
 				break;
 			
 				default:
@@ -423,11 +450,12 @@
 
 		/*Loading Bones*/
 		BonesSelect.addEventListener('change',function(){
+			var Bonesloader = new THREE.OBJLoader();
 			var file = this.files[0];
 			var reader = new FileReader();
 			reader.onloadend = function(e) {
 				var result = reader.result;
-				var object = loader.parse(result);
+				var object = Bonesloader.parse(result);
 
 				object.traverse( function ( child ) {
 					child.name = file.name;
@@ -435,7 +463,7 @@
 					
 					//if ( child.isMesh ) child.material.map = texture;
 				} );
-				gridHelper.add( object );
+				groupBones.add( object );
 			}
 			reader.readAsText(file);
 			closeEditor.click();
@@ -533,7 +561,7 @@
 
 			break;
 
-			default : console.log(event);
+			default : false;
 		}
 	})
 
@@ -560,8 +588,7 @@ var exportScene = document.getElementById('export_scene');
 exportScene.addEventListener('click',exportOBJ,false)
 
 function exportOBJ() {
-	//var result = exporter.parse(scene);
-	var json = groupHole.toJSON();
+	var json = gridHelper.toJSON();
 	saveString( json, 'scene.json' );
 }
 var link = document.createElement( 'a' );
