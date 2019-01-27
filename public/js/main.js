@@ -1,8 +1,5 @@
 		var camera, controls, controlObject, scene, renderer, canvas, canvas_container, texture, gridHelper,
 		gui, customContainer, 
-		holeGeo, holePlane,
-		holeBaseGeo, holeBasePlane,
-		groundGeo, groundPlane,
 		objects=[];
 		var groupHole = new THREE.Group(); groupHole.name = 'Hole';
 		var groupBones = new THREE.Group(); groupBones.name = 'Bones';
@@ -34,9 +31,17 @@
 	
 	function(){
 		//scene.remove(scene.getObjectByName('gridHelper'));
+		loadingStart();
+		var progress = document.getElementsByClassName('progress').item(0);
+		var progress_num = document.getElementsByClassName('progress_num').item(0);
 		objects=[];
 		var file = this.files[0];
 		var reader = new FileReader();
+		reader.onprogress = function(e){
+			var value = parseInt( ((e.loaded / e.total) * 100), 10 );
+			progress.setAttribute('style','width:'+value+'%;');
+			progress_num.innerHTML = value+'%';
+		}
 		reader.onloadend = function(e) {
 			var loader = new THREE.ObjectLoader();
 			var result = reader.result;
@@ -47,14 +52,18 @@
 				objects.push(child);
 				//if ( child.isMesh ) child.material.map = texture;
 			});
-			//init();
+			init();
 			//console.log(object.children[0])
 			groupHole.copy(object.children[0]);
 			groupBones.copy(object.children[1]);
-			//animate();
+			animate();
+			closeEditor.click();
+			loadingEnd();
+			progress.setAttribute('style','width:0%;');
+			progress_num.innerHTML = '0%';
 		}
 		reader.readAsText(file);
-
+		
 		if(gui.__folders['hole'] !== undefined) gui.removeFolder(gui.__folders['hole']);
 
 		var hole = gui.addFolder('hole');
@@ -142,7 +151,7 @@
 			gridHelper.name = 'gridHelper';
 			gridHelper.add(groupHole);
 			gridHelper.add(groupBones);
-			gridHelper.add(axesHelper);
+			scene.add(axesHelper);
 			scene.add(gridHelper);
 
 			// !!!!!!! a supprimer
@@ -327,10 +336,11 @@
 				hole.add(groupHole.scale, 'y', 1, 6).name('Depth').listen();
 				hole.add(groupHole.scale, 'z', 1, 6).name('Height').listen();
 			hole.open;
-
+			var holeGeo, holePlane,
+			holeBaseGeo, holeBasePlane,
+			groundGeo, groundPlane;
 			switch (item) {
 				case "geometry.png":
-					console.log("addBoxGeometry");
 					holeBaseGeo = new THREE.CircleBufferGeometry(141.4213562373095,4,Math.PI * 0.75);
 					holeBasePlane = new THREE.Mesh(holeBaseGeo, new THREE.MeshPhongMaterial({map: texture3, opacity: 0.9, transparent: true, side: THREE.DoubleSide}) );
 					holeBasePlane.rotateX(Math.PI * -0.5);
@@ -340,7 +350,6 @@
 					holePlane = new THREE.Mesh(holeGeo, new THREE.MeshPhongMaterial({map: texture3, opacity: 0.9, transparent: true, side: THREE.DoubleSide}) );
 					holePlane.translateY(50);
 					groupHole.add(holePlane);
-					console.log('bonjout tous le monde')
 
 					groundGeo = new THREE.RingBufferGeometry( 141.4213562373095, 400,4, 1,Math.PI * 0.75);
 					groundPlane = new THREE.Mesh( groundGeo, new THREE.MeshPhongMaterial({map: texture, side: THREE.DoubleSide}) );
@@ -350,7 +359,6 @@
 					
 				break;
 				case "cylinder.png":
-					console.log("addCylinder");
 					holeBaseGeo = new THREE.CircleBufferGeometry( 200, 128 );
 					cylBasePlane = new THREE.Mesh(holeBaseGeo, new THREE.MeshPhongMaterial({map: texture3, opacity: 0.9, transparent: true, side: THREE.DoubleSide}) );
 					cylBasePlane.rotateX(Math.PI * 0.5);
@@ -423,6 +431,32 @@
 					holeType.remove();
 				}, 400 );
 			})();
+		}
+
+		/* loading progress */
+		loadingStart = () => {
+			var loading = document.createElement('div');
+			loading.setAttribute('class','loading');
+
+			var loading_contain = document.createElement('div');
+			loading_contain.setAttribute('class','loading_contain');
+
+			var progress_num = document.createElement('span');
+			progress_num.setAttribute('class','progress_num');
+
+			var progress = document.createElement('div');
+			progress.setAttribute('class','progress');
+
+			
+			loading_contain.appendChild(progress);
+			loading_contain.appendChild(progress_num);
+			loading.appendChild(loading_contain);
+			editor.appendChild(loading);
+		}
+
+		loadingEnd = () => {
+			var loading = document.getElementsByClassName('loading').item(0);
+			loading.remove();
 		}
 
 		/* on add hole click */
@@ -590,6 +624,7 @@ exportScene.addEventListener('click',exportOBJ,false)
 function exportOBJ() {
 	var json = gridHelper.toJSON();
 	saveString( json, 'scene.json' );
+	closeEditor.click();
 }
 var link = document.createElement( 'a' );
 link.style.display = 'none';
@@ -598,6 +633,7 @@ function save( blob, filename ) {
 	link.href = URL.createObjectURL( blob );
 	link.download = filename;
 	link.click();
+	closeEditor.click();
 }
 function saveString( text, filename ) {
 	save( new Blob( [JSON.stringify(text, null, 2)] , { type: 'application/json' } ), filename );
