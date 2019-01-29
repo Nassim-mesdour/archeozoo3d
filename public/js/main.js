@@ -47,8 +47,7 @@
 			var result = reader.result;
 			resultJson = JSON.parse(result);
 			var object = loader.parse(resultJson);
-			console.log(object);
-			object.children[1].traverse( function ( child ) {
+			object.children[1].children[0].traverse( function ( child ) {
 				objects.push(child);
 				//if ( child.isMesh ) child.material.map = texture;
 			});
@@ -56,7 +55,7 @@
 			//console.log(object.children[0])
 			groupHole.copy(object.children[0]);
 			groupBones.copy(object.children[1]);
-			animate();
+			//animate();
 			closeEditor.click();
 			loadingEnd();
 			progress.setAttribute('style','width:0%;');
@@ -92,7 +91,7 @@
 		init(); //préparer la scene 
 		animate(); //boucle infinit pour l'animation 3D de la scene
 
-		function init(a) {
+		function init() {
 			// chargement des textures 
 			texture = new THREE.TextureLoader().load("../images/hall_ground.jpg"); 
 			texture3 = new THREE.TextureLoader().load("../images/hall_ground.png");
@@ -530,7 +529,7 @@
 			if ( intersects.length > 0 ) {
 				controlObject.attach(intersects[ 0 ].object);
 				onBoneSelect(intersects[0].object);
-				console.log(intersects[0].object)
+				console.log(intersects[0].object);
 			}
 		}
 
@@ -543,7 +542,6 @@
 			}else{
 				boneFolderEditor(bone);
 			}
-
 		}
 
 		// Bones editor
