@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "electron": "electron electron.js",
-    "package-mac": "electron-packager electron.js --overwrite --platform=darwin --arch=x64 --icon=./public/assets/icon.png --prune=true --out=release-builds"
+    "package-mac": "electron-packager electron.js --overwrite --platform=darwin --arch=x64 --icon=./public/images/assets/icon.png --prune=true --out=release-builds"
   },
   "dependencies": {
     "cookie-parser": "~1.4.3",
