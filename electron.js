@@ -6,6 +6,7 @@ const {app, BrowserWindow} = electron;
 
 let mainWindow;
 
+
 //listen in window open
 app.on('ready',function(){
 //create new window
@@ -17,3 +18,4 @@ app.on('ready',function(){
         slashes : true,
     }));
 });
+
