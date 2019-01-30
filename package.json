@@ -3,7 +3,8 @@
   "version": "0.1.2",
   "private": true,
   "scripts": {
-    "start": "nodemon ./bin/www"
+    "electron": "electron electron.js",
+    "package-mac": "electron-packager electron.js --overwrite --platform=darwin --arch=x64 --icon=./public/assets/icon.png --prune=true --out=release-builds"
   },
   "dependencies": {
     "cookie-parser": "~1.4.3",
