@@ -102,7 +102,7 @@
 
 			//scene
 			scene = new THREE.Scene();
-			scene.background = new THREE.Color( 11184810 );
+			scene.background = new THREE.Color(0xd4d4d4);
 
 			//renderer
 			renderer = new THREE.WebGLRenderer({canvas:canvas,antialias: true,clearAlpha:0});
