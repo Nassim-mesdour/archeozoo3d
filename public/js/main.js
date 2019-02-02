@@ -3,14 +3,15 @@
 		objects=[];
 		var groupHole = new THREE.Group(); groupHole.name = 'Hole';
 		var groupBones = new THREE.Group(); groupBones.name = 'Bones';
+		
+		// chargement des textures 
+		texture = new THREE.TextureLoader().load("../images/hall_ground.jpg"); 
+		texture3 = new THREE.TextureLoader().load("../images/hall_ground.png");
+
+		//canvas domHtmlDocument
+		canvas = document.getElementById('renderer');
+		canvas_container = document.getElementsByClassName('renderer_container');
 		//var dragControls, // à supprimer
-		manager = new THREE.LoadingManager();
-		manager.onProgress = function ( url, itemsLoaded, itemsTotal ) {
-			console.log( 'Loading file: ' + url + '.\nLoaded ' + itemsLoaded + ' of ' + itemsTotal + ' files.' );
-		};
-		manager.onError = function ( url ) {
-			console.log( 'There was an error loading ' + url );
-		};
 //////////////////////////////////////////////////////////////////////////////////////////
 //________________________________________________________________________________________
 /*
@@ -34,7 +35,10 @@
 		loadingStart();
 		var progress = document.getElementsByClassName('progress').item(0);
 		var progress_num = document.getElementsByClassName('progress_num').item(0);
-		objects=[];
+		var i = groupBones.children.length - 1;
+		for(i;i>=0;i--){
+			groupBones.remove(groupBones.children[i]);
+		}
 		var file = this.files[0];
 		var reader = new FileReader();
 		reader.onprogress = function(e){
@@ -47,15 +51,18 @@
 			var result = reader.result;
 			resultJson = JSON.parse(result);
 			var object = loader.parse(resultJson);
-			object.children[1].children[0].traverse( function ( child ) {
-				objects.push(child);
-				//if ( child.isMesh ) child.material.map = texture;
-			});
-			init();
-			//console.log(object.children[0])
+			for(i = object.children[1].children.length - 1 ; i>=0 ;i--){
+				object.children[1].children[i].traverse( function ( child ) {
+					objects.push(child);
+					//if ( child.isMesh ) child.material.map = texture;
+				});
+			}
+
+
 			groupHole.copy(object.children[0]);
-			groupBones.copy(object.children[1]);
-			//animate();
+			for(i = object.children[1].children.length - 1 ; i>=0 ;i--){
+				groupBones.add(object.children[1].children[i]);
+			}
 			closeEditor.click();
 			loadingEnd();
 			progress.setAttribute('style','width:0%;');
@@ -92,13 +99,6 @@
 		animate(); //boucle infinit pour l'animation 3D de la scene
 
 		function init() {
-			// chargement des textures 
-			texture = new THREE.TextureLoader().load("../images/hall_ground.jpg"); 
-			texture3 = new THREE.TextureLoader().load("../images/hall_ground.png");
-			
-			//canvas domHtmlDocument
-			canvas = document.getElementById('renderer');
-			canvas_container = document.getElementsByClassName('renderer_container');
 
 			//scene
 			scene = new THREE.Scene();
@@ -489,7 +489,7 @@
 			reader.onloadend = function(e) {
 				var result = reader.result;
 				var object = Bonesloader.parse(result);
-
+				console.log(object)
 				object.traverse( function ( child ) {
 					child.name = file.name;
 					objects.push(child);
@@ -529,7 +529,6 @@
 			if ( intersects.length > 0 ) {
 				controlObject.attach(intersects[ 0 ].object);
 				onBoneSelect(intersects[0].object);
-				console.log(intersects[0].object);
 			}
 		}
 
