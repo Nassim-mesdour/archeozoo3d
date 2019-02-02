@@ -39,6 +39,7 @@
 		for(i;i>=0;i--){
 			groupBones.remove(groupBones.children[i]);
 		}
+		objects = [];
 		var file = this.files[0];
 		var reader = new FileReader();
 		reader.onprogress = function(e){
