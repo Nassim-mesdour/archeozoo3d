@@ -39,6 +39,7 @@
 		var reader = new FileReader();
 		reader.onprogress = function(e){
 			var value = parseInt( ((e.loaded / e.total) * 100), 10 );
+			console.log(value);
 			progress.setAttribute('style','width:'+value+'%;');
 			progress_num.innerHTML = value+'%';
 		}
@@ -442,10 +443,11 @@
 
 			var progress_num = document.createElement('span');
 			progress_num.setAttribute('class','progress_num');
+			progress_num.setAttribute('id','progress_num');
 
 			var progress = document.createElement('div');
 			progress.setAttribute('class','progress');
-
+			progress.setAttribute('id','progress');
 			
 			loading_contain.appendChild(progress);
 			loading_contain.appendChild(progress_num);
