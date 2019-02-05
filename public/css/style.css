@@ -6,15 +6,13 @@ body {
 .sidebar{
   position: absolute;
   top: 10px;
-  left: 20px;
-  width: 60px;
+  width: 110px;
 }
 
 .sidebar_top{
   position: absolute;
-    top: 10px;
-    left: 70px;
-    width: 360px;
+  left: 90px;
+  width: 310px;
 }
 
 .topbar{
@@ -43,60 +41,61 @@ body {
   margin: 5px;
 }
 
-.flex-container .sub_menu_lft {
-  background-color: #3d3a31;
-  width: 40px;
-  margin: 5px;
-  text-align: center;
-  color: #fff;
-  border-radius: 26px;
-  padding: 8px 0;
+.flex-container>div:hover{
   box-shadow: 0 0 2px 2px #ffffff;
-  cursor: pointer;
-  transform: translate(-72px);
-  transition :  0.2s ease-in;
+} 
+
+.flex-container span{
+  display: block;
+  font-size: 13px;
+  position: relative;
+  top: 3px;
+  margin: 2px 0;
 }
 
-.flex-container .sub_menu_top{
-  background-color: #3d3a31;
-  width: 40px;
+.flex-container .sub_menu_lft {
+  background-color: transparent;
+  width: 90px;
   margin: 5px;
   text-align: center;
-  color: #fff;
-  border-radius: 26px;
+  color: #2e77b5;
+  border-radius: 3px;
   padding: 8px 0;
-  box-shadow: 0 0 2px 2px #ffffff;
   cursor: pointer;
-  transform: translate(0,-72px);
-  transition :  0.2s ease-in;
+  transform: scale(0);
+  transition: 0.2s ease-in;
+}
+
+
+.flex-container .sub_menu_top{
+  background-color: transparent;
+  width: 90px;
+  margin: 5px;
+  text-align: center;
+  color: #2e77b5;
+  border-radius: 3px;
+  padding: 8px 0;
+  cursor: pointer;
+  transform: scale(0);
+  transition: 0.18s ease-in;
 }
 
 .flex-container #menu-devlop{
-  background-color: #3d3a31;
+  background-color: transparent;
+  position: relative;
+  left: 25px;
   width: 40px;
   margin: 5px;
   text-align: center;
-  color: #fff;
+  color: #2e77b5;
   border-radius: 26px;
   padding: 8px 0;
   cursor: pointer;
-  transition : 0.2s ease;
+  transition: 0.18s ease;
 }
-
-
-.flex-container >div:hover{
-  -moz-transform: scale(1.2);
-  -webkit-transform: scale(1.2);
-  transform: scale(1.2);
-} 
 
 .flex-container i{
   font-size: 23px;
-}
-
-.flex-container > div > span {
-  display: block;
-  font-size: 13px;
 }
 
 .renderer_container{
@@ -119,7 +118,7 @@ body {
 .editor{
   position: absolute;
   z-index: 402;
-  background-color: #000000e3;
+  background-color: #0000009e;
   top: 0;
   left: 0;
   right: 0;
@@ -128,7 +127,7 @@ body {
   transition: transform 0.2s ease-in-out;
 }
 
-._hole_type{
+.editorContain{
   position: absolute;
   display: inline-flex;
   flex-wrap: wrap;
@@ -138,14 +137,14 @@ body {
   bottom: 0;
   left: 0;
   right: 0;
-  margin: auto 100px;
+  margin: auto 50px;
   height: auto;
   padding: 15px;
   transition: 0.3s ease-out; 
   transition-property: transform, opacity;
 }
 
-._hole_type .type{
+.editorContain .type{
   position: relative;
   margin: 10px;
   padding: 5px;
@@ -158,11 +157,11 @@ body {
   cursor: pointer;
 }
 
-._hole_type .type:hover{
+.editorContain .type:hover{
   transform: scale(1.1,1.1);
 }
 
-._hole_type .type>img{
+.editorContain .type>img{
   width: 100%;
   height: 100%;
 }
@@ -205,10 +204,11 @@ body {
 
 .upload{
   position: absolute;
+  z-index: 1;
   left: 0;
   top: 0;
   width: 100%;
-  height: 40px;
+  height: 59px;
   border-radius: 26px;
   opacity: 0;
   cursor: pointer;
@@ -216,11 +216,12 @@ body {
 
 #enable{
   position: absolute;
-  top: 20px;
-  left: 30px;
+  z-index: 403;
+  top: 18px;
+  left: 34px;
   border: 0;
   border-radius: 22px;
-  font-size: 40px;
+  font-size: 42px;
   font-weight: bold;
   color: #fff;
   cursor: pointer;
