@@ -5,8 +5,8 @@ var groupHole = new THREE.Group(); groupHole.name = 'Hole';
 var groupBones = new THREE.Group(); groupBones.name = 'Bones';
 
 // chargement des textures 
-texture = new THREE.TextureLoader().load("../images/hall_ground.jpg"); 
-texture3 = new THREE.TextureLoader().load("../images/hall_ground.png");
+texture = new THREE.TextureLoader().load("../assets/images/hall_ground.jpg"); 
+texture3 = new THREE.TextureLoader().load("../assets/images/hall_ground.png");
 
 //canvas domHtmlDocument
 canvas = document.getElementById('renderer');
