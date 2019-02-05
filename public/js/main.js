@@ -241,41 +241,42 @@
 			styeleState.subMenu = !styeleState.subMenu ;
 			function dragElementLeftOut(i){
 				controlsElemLft.item(i).setAttribute(
-					"style","transform: translate(0px)"
+					"style","transform: scale(1)"
 				);
 			}
 			function dragElementLeftIn(i){
 				controlsElemLft.item(i).setAttribute(
-					"style","transform: translate(-72px);"
+					"style","transform: scale(0);"
 				);
 			}
 		
 			function dragElementRightOut(i){ 
 				controlsElemTop.item(i).setAttribute(
-					"style","transform: translate(0px,0px)"
+					"style","transform: scale(1)"
 				);
 			}
 			function dragElementRightIn(i){
 				controlsElemTop.item(i).setAttribute(
-					"style","transform: translate(0px,-72px);"
+					"style","transform: scale(0);"
 				);
 			}
 		},false);
 		
 		// enable Editor
 		(function(){
-			for(i;i<controlsElemLft.length;i++){
-				controlsElemLft.item(i).addEventListener('click',function(){
-					openEditor[0].setAttribute(
-						"style","transform: scale(1,1)"
-					)
-				},false);
-				controlsElemTop.item(i).addEventListener('click',function(){
-					openEditor[0].setAttribute(
-						"style","transform: scale(1,1)"
-					)
-				},false);
-			}
+			var addHole = document.getElementById('add_hole');
+			addHole.addEventListener('click',function(){
+				openEditor[0].setAttribute(
+					"style","transform: scale(1,1)"
+				)
+			},false);
+
+			var addGrid = document.getElementById('add_grid');
+			addGrid.addEventListener('click',function(){
+				openEditor[0].setAttribute(
+					"style","transform: scale(1,1)"
+				)
+			},false);
 		})();
 		
 		// disable Editor
@@ -283,6 +284,7 @@
 			this.parentElement.setAttribute(
 				"style","transform: scale(0,0)"
 			)
+			this.parentElement.children[1] ? this.parentElement.children[1].remove() : false;
 		},false);
 	
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -405,8 +407,8 @@
 			if(editor.childElementCount === 2){
 				return;
 			}
-			var _hole_type = document.createElement('div');
-			_hole_type.setAttribute('class','_hole_type');
+			var editorContain = document.createElement('div');
+			editorContain.setAttribute('class','editorContain');
 
 			imageHole.forEach( (item, index) => {
 				var type = document.createElement('div');
@@ -416,18 +418,17 @@
 				img.setAttribute('src','images/hole/'+item);
 
 				type.appendChild(img);
-				_hole_type.appendChild(type);
+				editorContain.appendChild(type);
 			})
 
-			editor.appendChild(_hole_type);
+			editor.appendChild(editorContain);
 		}
 		closeHoleSelector = () =>{
-			var holeType = document.getElementsByClassName('_hole_type').item(0);
+			var holeType = document.getElementsByClassName('editorContain').item(0);
 			holeType.setAttribute('style','transform:translate(-200px);opacity:0;');
 			(function(){
 				setTimeout(function(){
 					closeEditor.click();
-					holeType.remove();
 				}, 400 );
 			})();
 		}
@@ -584,18 +585,18 @@
 //___Bones_Selection______________________________________________________________________
 //////////////////////////////////////////////////////////////////////////////////////////
 
-	window.addEventListener('click',function(event){
-		switch ( event.keyCode ){
-			case 17 :
-				var SelectedBones = new THREE.Group();
-				SelectedBones.name = 'SelectedBones';
+		window.addEventListener('click',function(event){
+			switch ( event.keyCode ){
+				case 17 :
+					var SelectedBones = new THREE.Group();
+					SelectedBones.name = 'SelectedBones';
 
 
-			break;
+				break;
 
-			default : false;
-		}
-	})
+				default : false;
+			}
+		})
 
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -614,28 +615,28 @@
 //////////////////////////////////////////////////////////////////////////////////////////
 
 
-//var exporter = new THREE.SceneExporter();
-var exportScene = document.getElementById('export_scene');
+		//var exporter = new THREE.SceneExporter();
+		var exportScene = document.getElementById('export_scene');
 
-exportScene.addEventListener('click',exportOBJ,false)
+		exportScene.addEventListener('click',exportOBJ,false)
 
-function exportOBJ() {
-	var json = gridHelper.toJSON();
-	saveString( json, 'scene.json' );
-	closeEditor.click();
-}
-var link = document.createElement( 'a' );
-link.style.display = 'none';
-document.body.appendChild( link );
-function save( blob, filename ) {
-	link.href = URL.createObjectURL( blob );
-	link.download = filename;
-	link.click();
-	closeEditor.click();
-}
-function saveString( text, filename ) {
-	save( new Blob( [JSON.stringify(text, null, 2)] , { type: 'application/json' } ), filename );
-}
+		function exportOBJ() {
+			var json = gridHelper.toJSON();
+			saveString( json, 'scene.json' );
+			closeEditor.click();
+		}
+		var link = document.createElement( 'a' );
+		link.style.display = 'none';
+		document.body.appendChild( link );
+		function save( blob, filename ) {
+			link.href = URL.createObjectURL( blob );
+			link.download = filename;
+			link.click();
+			closeEditor.click();
+		}
+		function saveString( text, filename ) {
+			save( new Blob( [JSON.stringify(text, null, 2)] , { type: 'application/json' } ), filename );
+		}
 
 
 //////////////////////////////////////////////////////////////////////////////////////////
