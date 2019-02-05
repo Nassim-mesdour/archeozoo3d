@@ -1,4 +1,3 @@
-		var camera, controls, controlObject, scene, renderer, canvas, canvas_container, texture, gridHelper,
 var camera, controls, controlObject, scene, renderer, canvas, canvas_container, texture, gridHelper,
 gui, customContainer, 
 objects=[];
