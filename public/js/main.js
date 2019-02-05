@@ -27,47 +27,6 @@ canvas_container = document.getElementsByClassName('renderer_container');
 //__Load project__________________________________________________________________________
 //////////////////////////////////////////////////////////////////////////////////////////
 
-<<<<<<< HEAD
-	var _loadProject = document.getElementById('project');
-	_loadProject.addEventListener('change',
-	
-	function(){
-		//scene.remove(scene.getObjectByName('gridHelper'));
-		loadingStart();
-		var progress = document.getElementsByClassName('progress').item(0);
-		var progress_num = document.getElementsByClassName('progress_num').item(0);
-		objects=[];
-		var file = this.files[0];
-		var reader = new FileReader();
-		reader.onprogress = function(e){
-			var value = parseInt( ((e.loaded / e.total) * 100), 10 );
-			console.log(value);
-			progress.setAttribute('style','width:'+value+'%;');
-			progress_num.innerHTML = value+'%';
-		}
-		reader.onloadend = function(e) {
-			var loader = new THREE.ObjectLoader();
-			var result = reader.result;
-			resultJson = JSON.parse(result);
-			var object = loader.parse(resultJson);
-			console.log(object);
-			object.children[1].traverse( function ( child ) {
-				objects.push(child);
-				//if ( child.isMesh ) child.material.map = texture;
-			});
-			init();
-			groupHole.copy(object.children[0]);
-			groupBones.copy(object.children[1]);
-			animate();
-			closeEditor.click();
-			loadingEnd();
-			progress.setAttribute('style','width:0%;');
-			progress_num.innerHTML = '0%';
-		}
-		reader.readAsText(file);
-		
-		if(gui.__folders['hole'] !== undefined) gui.removeFolder(gui.__folders['hole']);
-=======
 var _loadProject = document.getElementById('project');
 _loadProject.addEventListener('change',
 
@@ -80,7 +39,7 @@ var i = groupBones.children.length - 1;
 for(i;i>=0;i--){
 	groupBones.remove(groupBones.children[i]);
 }
-objects=[];
+objects = [];
 var file = this.files[0];
 var reader = new FileReader();
 reader.onprogress = function(e){
@@ -113,7 +72,6 @@ reader.onloadend = function(e) {
 reader.readAsText(file);
 
 if(gui.__folders['hole'] !== undefined) gui.removeFolder(gui.__folders['hole']);
->>>>>>> d3bf89ba4ea12979addb544fafde4fae6beed8b7
 
 var hole = gui.addFolder('hole');
 	hole.add(groupHole.scale, 'x', 1, 6).name('Width').listen();
@@ -145,7 +103,7 @@ function init() {
 
 	//scene
 	scene = new THREE.Scene();
-	scene.background = new THREE.Color( 11184810 );
+	scene.background = new THREE.Color(0xd4d4d4);
 
 	//renderer
 	renderer = new THREE.WebGLRenderer({canvas:canvas,antialias: true,clearAlpha:0});
@@ -284,41 +242,42 @@ menuDevlop.addEventListener('click',function(){
 	styeleState.subMenu = !styeleState.subMenu ;
 	function dragElementLeftOut(i){
 		controlsElemLft.item(i).setAttribute(
-			"style","transform: translate(0px)"
+			"style","transform: scale(1)"
 		);
 	}
 	function dragElementLeftIn(i){
 		controlsElemLft.item(i).setAttribute(
-			"style","transform: translate(-72px);"
+			"style","transform: scale(0);"
 		);
 	}
 
 	function dragElementRightOut(i){ 
 		controlsElemTop.item(i).setAttribute(
-			"style","transform: translate(0px,0px)"
+			"style","transform: scale(1)"
 		);
 	}
 	function dragElementRightIn(i){
 		controlsElemTop.item(i).setAttribute(
-			"style","transform: translate(0px,-72px);"
+			"style","transform: scale(0);"
 		);
 	}
 },false);
 
 // enable Editor
 (function(){
-	for(i;i<controlsElemLft.length;i++){
-		controlsElemLft.item(i).addEventListener('click',function(){
-			openEditor[0].setAttribute(
-				"style","transform: scale(1,1)"
-			)
-		},false);
-		controlsElemTop.item(i).addEventListener('click',function(){
-			openEditor[0].setAttribute(
-				"style","transform: scale(1,1)"
-			)
-		},false);
-	}
+	var addHole = document.getElementById('add_hole');
+	addHole.addEventListener('click',function(){
+		openEditor[0].setAttribute(
+			"style","transform: scale(1,1)"
+		)
+	},false);
+
+	var addGrid = document.getElementById('add_grid');
+	addGrid.addEventListener('click',function(){
+		openEditor[0].setAttribute(
+			"style","transform: scale(1,1)"
+		)
+	},false);
 })();
 
 // disable Editor
@@ -326,6 +285,7 @@ closeEditor.addEventListener('click',function(){
 	this.parentElement.setAttribute(
 		"style","transform: scale(0,0)"
 	)
+	this.parentElement.children[1] ? this.parentElement.children[1].remove() : false;
 },false);
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -448,8 +408,8 @@ openHoleSelector = () => {
 	if(editor.childElementCount === 2){
 		return;
 	}
-	var _hole_type = document.createElement('div');
-	_hole_type.setAttribute('class','_hole_type');
+	var editorContain = document.createElement('div');
+	editorContain.setAttribute('class','editorContain');
 
 	imageHole.forEach( (item, index) => {
 		var type = document.createElement('div');
@@ -459,18 +419,17 @@ openHoleSelector = () => {
 		img.setAttribute('src','images/hole/'+item);
 
 		type.appendChild(img);
-		_hole_type.appendChild(type);
+		editorContain.appendChild(type);
 	})
 
-	editor.appendChild(_hole_type);
+	editor.appendChild(editorContain);
 }
 closeHoleSelector = () =>{
-	var holeType = document.getElementsByClassName('_hole_type').item(0);
+	var holeType = document.getElementsByClassName('editorContain').item(0);
 	holeType.setAttribute('style','transform:translate(-200px);opacity:0;');
 	(function(){
 		setTimeout(function(){
 			closeEditor.click();
-			holeType.remove();
 		}, 400 );
 	})();
 }
@@ -480,21 +439,6 @@ loadingStart = () => {
 	var loading = document.createElement('div');
 	loading.setAttribute('class','loading');
 
-<<<<<<< HEAD
-			var progress_num = document.createElement('span');
-			progress_num.setAttribute('class','progress_num');
-			progress_num.setAttribute('id','progress_num');
-
-			var progress = document.createElement('div');
-			progress.setAttribute('class','progress');
-			progress.setAttribute('id','progress');
-			
-			loading_contain.appendChild(progress);
-			loading_contain.appendChild(progress_num);
-			loading.appendChild(loading_contain);
-			editor.appendChild(loading);
-		}
-=======
 	var loading_contain = document.createElement('div');
 	loading_contain.setAttribute('class','loading_contain');
 
@@ -503,7 +447,6 @@ loadingStart = () => {
 
 	var progress = document.createElement('div');
 	progress.setAttribute('class','progress');
->>>>>>> d3bf89ba4ea12979addb544fafde4fae6beed8b7
 
 	
 	loading_contain.appendChild(progress);
@@ -643,16 +586,16 @@ function boneFolderEditor (bone){
 //////////////////////////////////////////////////////////////////////////////////////////
 
 window.addEventListener('click',function(event){
-switch ( event.keyCode ){
-	case 17 :
-		var SelectedBones = new THREE.Group();
-		SelectedBones.name = 'SelectedBones';
+	switch ( event.keyCode ){
+		case 17 :
+			var SelectedBones = new THREE.Group();
+			SelectedBones.name = 'SelectedBones';
 
 
-	break;
+		break;
 
-	default : false;
-}
+		default : false;
+	}
 })
 
 
@@ -678,21 +621,21 @@ var exportScene = document.getElementById('export_scene');
 exportScene.addEventListener('click',exportOBJ,false)
 
 function exportOBJ() {
-var json = gridHelper.toJSON();
-saveString( json, 'scene.json' );
-closeEditor.click();
+	var json = gridHelper.toJSON();
+	saveString( json, 'scene.json' );
+	closeEditor.click();
 }
 var link = document.createElement( 'a' );
 link.style.display = 'none';
 document.body.appendChild( link );
 function save( blob, filename ) {
-link.href = URL.createObjectURL( blob );
-link.download = filename;
-link.click();
-closeEditor.click();
+	link.href = URL.createObjectURL( blob );
+	link.download = filename;
+	link.click();
+	closeEditor.click();
 }
 function saveString( text, filename ) {
-save( new Blob( [JSON.stringify(text, null, 2)] , { type: 'application/json' } ), filename );
+	save( new Blob( [JSON.stringify(text, null, 2)] , { type: 'application/json' } ), filename );
 }
 
 
