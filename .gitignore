@@ -1,2 +1,6 @@
 /node_modules
+<<<<<<< HEAD
 /release-builds/archeozoo3D-win32-ia32
+=======
+/release-builds
+>>>>>>> 018ac66b3e3b4163284fbd186f98282479cdacfc
