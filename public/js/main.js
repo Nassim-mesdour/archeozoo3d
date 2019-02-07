@@ -1,6 +1,12 @@
 		var camera, controls, controlObject, scene, renderer, canvas, canvas_container, texture, gridHelper,
 		gui, customContainer, 
 		objects=[];
+		state = {
+			animation : false
+		};
+		var holeGeo, holePlane,
+		holeBaseGeo, holeBasePlane,
+		groundGeo, groundPlane;
 		var groupHole = new THREE.Group(); groupHole.name = 'Hole';
 		var groupBones = new THREE.Group(); groupBones.name = 'Bones';
 		
@@ -93,10 +99,14 @@
 #
 #
 */
-//__Load project__________________________________________________________________________
+//__start editor__________________________________________________________________________
 //////////////////////////////////////////////////////////////////////////////////////////
 
 		init(); //préparer la scene 
+		var animateDiapo = document.getElementById('scene_animation');
+		animateDiapo.addEventListener('click',function(){
+			state.animation = !state.animation;
+		},false)
 		animate(); //boucle infinit pour l'animation 3D de la scene
 
 		function init() {
@@ -151,7 +161,7 @@
 			gridHelper.name = 'gridHelper';
 			gridHelper.add(groupHole);
 			gridHelper.add(groupBones);
-			scene.add(axesHelper);
+			gridHelper.add(axesHelper);
 			scene.add(gridHelper);
 
 			// !!!!!!! a supprimer
@@ -181,6 +191,7 @@
 		}
 		function animate(){
 			requestAnimationFrame( animate );
+			state.animation ? gridHelper.rotation.y += 0.005 : gridHelper.rotation.y = gridHelper.rotation.y;
 			controls.update(); // only required if controls.enableDamping = true, or if controls.autoRotate = true
 			renderer.render( scene, camera );
 		}
@@ -338,9 +349,6 @@
 				hole.add(groupHole.scale, 'y', 1, 6).name('Depth').listen();
 				hole.add(groupHole.scale, 'z', 1, 6).name('Height').listen();
 			hole.open;
-			var holeGeo, holePlane,
-			holeBaseGeo, holeBasePlane,
-			groundGeo, groundPlane;
 			switch (item) {
 				case "geometry.png":
 					holeBaseGeo = new THREE.CircleBufferGeometry(141.4213562373095,4,Math.PI * 0.75);
@@ -519,7 +527,6 @@
 			reader.onloadend = function(e) {
 				var result = reader.result;
 				var object = Bonesloader.parse(result);
-				console.log(object)
 				object.traverse( function ( child ) {
 					child.name = file.name;
 					objects.push(child);
@@ -681,9 +688,3 @@
 */
 //________________________________________________________________________________________
 //////////////////////////////////////////////////////////////////////////////////////////
-
-// load json models 
-// var loader = new THREE.ObjectLoader();
-// loader.load( "../examples/models/json/lightmap/lightmap.json", function ( object ) {
-// 	scene.add( object );
-// });
