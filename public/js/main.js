@@ -353,7 +353,7 @@
 					holePlane.translateY(50);
 					groupHole.add(holePlane);
 
-					groundGeo = new THREE.RingBufferGeometry( 141.4213562373095, 400,4, 1,Math.PI * 0.75);
+					groundGeo = new THREE.RingBufferGeometry( 141.4213562373095, 200,4, 1,Math.PI * 0.75);
 					groundPlane = new THREE.Mesh( groundGeo, new THREE.MeshPhongMaterial({map: texture, side: THREE.DoubleSide}) );
 					groundPlane.translateY(100);
 					groundPlane.rotateX(Math.PI * -0.5);	
@@ -361,17 +361,17 @@
 					
 				break;
 				case "cylinder.png":
-					holeBaseGeo = new THREE.CircleBufferGeometry( 200, 128 );
+					holeBaseGeo = new THREE.CircleBufferGeometry( 100, 128 );
 					cylBasePlane = new THREE.Mesh(holeBaseGeo, new THREE.MeshPhongMaterial({map: texture3, opacity: 0.9, transparent: true, side: THREE.DoubleSide}) );
 					cylBasePlane.rotateX(Math.PI * 0.5);
 					groupHole.add(cylBasePlane);
 
-					holeGeo = new THREE.CylinderBufferGeometry( 200, 200, 100, 64 ,0,true);
+					holeGeo = new THREE.CylinderBufferGeometry( 100, 100, 100, 64 ,0,true);
 					holePlane = new THREE.Mesh(holeGeo, new THREE.MeshPhongMaterial({map: texture3, opacity: 0.9, transparent: true, side: THREE.DoubleSide}) );
 					holePlane.translateY(50)
 					groupHole.add(holePlane);
 					
-					groundGeo = new THREE.RingBufferGeometry( 200, 400, 30 );
+					groundGeo = new THREE.RingBufferGeometry( 100, 150, 80 );
 					groundPlane = new THREE.Mesh(groundGeo, new THREE.MeshPhongMaterial({map: texture, side: THREE.DoubleSide}) );
 					groundPlane.translateY(100);
 					groundPlane.rotateX(Math.PI * -0.5);
@@ -462,6 +462,34 @@
 
 		/* on add hole click */
 		addHole.addEventListener('click',() => openHoleSelector(),false)
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////
+//________________________________________________________________________________________
+/*
+#
+#
+#
+#
+#
+#
+#
+#
+*/
+//__hole_level____________________________________________________________________________
+//////////////////////////////////////////////////////////////////////////////////////////
+		var addGrid = document.getElementById('add_grid');
+		addGrid.addEventListener('click',function(){
+			gridHelperLevel = new THREE.GridHelper(200,40);
+			holeSize = groupHole.scale;
+			gridHelperLevel.scale.set(holeSize.x,holeSize.y,holeSize.z);
+			gridHelperLevel.position.set(0,50,0)
+			groupHole.add(gridHelperLevel);
+		},false)
+
+
+
 
 //////////////////////////////////////////////////////////////////////////////////////////
 //________________________________________________________________________________________
