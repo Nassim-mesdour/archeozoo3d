@@ -123,8 +123,8 @@ body {
   left: 0;
   right: 0;
   bottom: 0;
-  transform: scale(0,0) translateY(-800px);
-  transition: transform 0.2s ease-in-out;
+  transform: translateY(-800px);
+  transition: transform 0.5s ease-in-out;
 }
 
 .editorContain{
@@ -140,7 +140,7 @@ body {
   margin: auto 50px;
   height: auto;
   padding: 15px;
-  transition: 0.3s ease-out; 
+  transition: 0.4s ease-in-out; 
   transition-property: transform, opacity;
 }
 

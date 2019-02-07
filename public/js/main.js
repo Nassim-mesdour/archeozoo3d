@@ -9,6 +9,7 @@
 		groundGeo, groundPlane;
 		var groupHole = new THREE.Group(); groupHole.name = 'Hole';
 		var groupBones = new THREE.Group(); groupBones.name = 'Bones';
+		var groupGridLevel = new THREE.Group(); groupGridLevel.name = 'gridlavel';
 		
 		// chargement des textures 
 		texture = new THREE.TextureLoader().load("../images/hall_ground.jpg"); 
@@ -161,6 +162,7 @@
 			gridHelper.name = 'gridHelper';
 			gridHelper.add(groupHole);
 			gridHelper.add(groupBones);
+			gridHelper.add(groupGridLevel);
 			gridHelper.add(axesHelper);
 			scene.add(gridHelper);
 
@@ -279,7 +281,7 @@
 			var addHole = document.getElementById('add_hole');
 			addHole.addEventListener('click',function(){
 				openEditor[0].setAttribute(
-					"style","transform: translateY(0px) scale(1,1)"
+					"style","transform: translateY(0px)"
 				)
 			},false);
 
@@ -287,7 +289,7 @@
 			addGrid.addEventListener('click',function(){
 				openHoleLevel();
 				openEditor[0].setAttribute(
-					"style","transform: translateY(0px) scale(1,1)"
+					"style","transform: translateY(0px)"
 				)
 			},false);
 		})();
@@ -295,7 +297,7 @@
 		// disable Editor
 		closeEditor.addEventListener('click',function(){
 			var element = this.parentElement;
-			element.setAttribute('style','transform: translateY(-800px) scale(0,0);');
+			element.setAttribute('style','transform: translateY(-800px);');
 			element.children[1] ? element.children[1].remove() : false;
 		},false);
 	
@@ -345,9 +347,13 @@
 
 
 			var hole = gui.addFolder('hole');
-				hole.add(groupHole.scale, 'x', 1, 6).name('Width').listen();
+				hole.add(groupHole.scale, 'x', 1, 6).name('Width').onChange(function(e){
+					groupGridLevel.scale.x = e;
+				});
 				hole.add(groupHole.scale, 'y', 1, 6).name('Depth').listen();
-				hole.add(groupHole.scale, 'z', 1, 6).name('Height').listen();
+				hole.add(groupHole.scale, 'z', 1, 6).name('Height').onChange(function(e){
+					groupGridLevel.scale.z = e;
+				});
 			hole.open;
 			switch (item) {
 				case "geometry.png":
@@ -528,7 +534,7 @@
 			holeSize = groupHole.scale;
 			gridHelperLevel.scale.set(holeSize.x,holeSize.y,holeSize.z);
 			gridHelperLevel.position.set(0,value[0].valueAsNumber,0)
-			gridHelper.add(gridHelperLevel);
+			groupGridLevel.add(gridHelperLevel);
 			closeEditor.click();
 		}
 
