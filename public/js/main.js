@@ -279,24 +279,24 @@
 			var addHole = document.getElementById('add_hole');
 			addHole.addEventListener('click',function(){
 				openEditor[0].setAttribute(
-					"style","transform: scale(1,1)"
+					"style","transform: translateY(0px) scale(1,1)"
 				)
 			},false);
 
 			var addGrid = document.getElementById('add_grid');
 			addGrid.addEventListener('click',function(){
+				openHoleLevel();
 				openEditor[0].setAttribute(
-					"style","transform: scale(1,1)"
+					"style","transform: translateY(0px) scale(1,1)"
 				)
 			},false);
 		})();
 		
 		// disable Editor
 		closeEditor.addEventListener('click',function(){
-			this.parentElement.setAttribute(
-				"style","transform: scale(0,0)"
-			)
-			this.parentElement.children[1] ? this.parentElement.children[1].remove() : false;
+			var element = this.parentElement;
+			element.setAttribute('style','transform: translateY(-800px) scale(0,0);');
+			element.children[1] ? element.children[1].remove() : false;
 		},false);
 	
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -442,6 +442,35 @@
 			})();
 		}
 
+		/* hole level */
+		openHoleLevel = () =>{
+			var editorContain = document.createElement('div');
+			editorContain.setAttribute('class','editorContain');
+
+			var holeLevel = document.createElement('div');
+			holeLevel.setAttribute('class','holeLevel');
+
+			var inputNumber = document.createElement('input');
+			inputNumber.setAttribute('id','level_Number');
+			inputNumber.setAttribute('type','number');
+			inputNumber.setAttribute('name','levelNumber');
+			inputNumber.autofocus = true;
+			inputNumber.setAttribute('min','0');
+			inputNumber.setAttribute('max','600');
+
+			var validate = document.createElement('button');
+			validate.innerHTML = 'OK'
+			validate.setAttribute('id','validate_level');
+
+			holeLevel.appendChild(inputNumber);
+			holeLevel.appendChild(validate);
+			editorContain.appendChild(holeLevel);
+			editor.appendChild(editorContain);
+
+			var validate_level = document.getElementById('validate_level');
+			validate_level.addEventListener('click',()=> validateLevel(),false)
+		}
+
 		/* loading progress */
 		loadingStart = () => {
 			var loading = document.createElement('div');
@@ -470,7 +499,7 @@
 
 		/* on add hole click */
 		addHole.addEventListener('click',() => openHoleSelector(),false)
-
+		
 
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -486,18 +515,22 @@
 #
 */
 //__hole_level____________________________________________________________________________
-//////////////////////////////////////////////////////////////////////////////////////////
-		var addGrid = document.getElementById('add_grid');
-		addGrid.addEventListener('click',function(){
+//////////////////////////////////////////////////////////////////////////////////////////	
+		
+		validateLevel = () => {
+			var value = document.getElementsByName('levelNumber');
+			console.log();
+			if(value[0].valueAsNumber < 0 | value[0].valueAsNumber > 600){
+				closeEditor.click();
+				return;
+			}
 			gridHelperLevel = new THREE.GridHelper(200,40);
 			holeSize = groupHole.scale;
 			gridHelperLevel.scale.set(holeSize.x,holeSize.y,holeSize.z);
-			gridHelperLevel.position.set(0,50,0)
-			groupHole.add(gridHelperLevel);
-		},false)
-
-
-
+			gridHelperLevel.position.set(0,value[0].valueAsNumber,0)
+			gridHelper.add(gridHelperLevel);
+			closeEditor.click();
+		}
 
 //////////////////////////////////////////////////////////////////////////////////////////
 //________________________________________________________________________________________
