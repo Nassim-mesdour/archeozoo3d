@@ -2,7 +2,9 @@
 		gui, customContainer, 
 		objects=[];
 		state = {
-			animation : false
+			animation : {
+				play : false,
+			}
 		};
 		var holeGeo, holePlane,
 		holeBaseGeo, holeBasePlane,
@@ -39,6 +41,7 @@
 	
 	function(){
 		//scene.remove(scene.getObjectByName('gridHelper'));
+		openEditorManual();
 		loadingStart();
 		var progress = document.getElementsByClassName('progress').item(0);
 		var progress_num = document.getElementsByClassName('progress_num').item(0);
@@ -106,8 +109,17 @@
 		init(); //préparer la scene 
 		var animateDiapo = document.getElementById('scene_animation');
 		animateDiapo.addEventListener('click',function(){
-			state.animation = !state.animation;
-		},false)
+			state.animation.play = !state.animation.play;
+			state.animation.play ? (
+				this.children['0'].setAttribute('class','fa fa-pause-circle'),
+				this.style.background = "#2e76b5",
+				this.style.color = "#fff"
+			):(
+				this.children['0'].setAttribute('class','fa fa-play-circle'),
+				this.style.background = "#fff",
+				this.style.color = "#2e76b5" 
+			);
+		},false);
 		animate(); //boucle infinit pour l'animation 3D de la scene
 
 		function init() {
@@ -193,7 +205,7 @@
 		}
 		function animate(){
 			requestAnimationFrame( animate );
-			state.animation ? gridHelper.rotation.y += 0.005 : gridHelper.rotation.y = gridHelper.rotation.y;
+			state.animation.play ? gridHelper.rotation.y += 0.005 : gridHelper.rotation.y = gridHelper.rotation.y;
 			controls.update(); // only required if controls.enableDamping = true, or if controls.autoRotate = true
 			renderer.render( scene, camera );
 		}
@@ -281,7 +293,7 @@
 			var addHole = document.getElementById('add_hole');
 			addHole.addEventListener('click',function(){
 				openEditor[0].setAttribute(
-					"style","transform: translateY(0px)"
+					"style","transform: scale(0.8,0.8) translateY(0px); zoom:1.2;"
 				)
 			},false);
 
@@ -289,11 +301,17 @@
 			addGrid.addEventListener('click',function(){
 				openHoleLevel();
 				openEditor[0].setAttribute(
-					"style","transform: translateY(0px)"
+					"style","transform: scale(0.4,0.4) translateY(0px); zoom:2;"
 				)
 			},false);
 		})();
-		
+		//open editor
+		openEditorManual = () => {
+			openEditor[0].setAttribute(
+				"style","transform: scale(0.8,0.8) translateY(0px); zoom:2;"
+			)
+		}
+
 		// disable Editor
 		closeEditor.addEventListener('click',function(){
 			var element = this.parentElement;
