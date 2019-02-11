@@ -4,13 +4,16 @@
 		state = {
 			animation : {
 				play : false,
-			}
+			},
+			selectedBone : [],
+			selectedBones : []
 		};
 		var holeGeo, holePlane,
 		holeBaseGeo, holeBasePlane,
 		groundGeo, groundPlane;
 		var groupHole = new THREE.Group(); groupHole.name = 'Hole';
 		var groupBones = new THREE.Group(); groupBones.name = 'Bones';
+		var groupBonesSelected = new THREE.Group(); groupBones.name = 'Bones';
 		var groupGridLevel = new THREE.Group(); groupGridLevel.name = 'gridlavel';
 		
 		// chargement des textures 
@@ -574,7 +577,6 @@
 			objectSlected : undefined
 		}
 		var BonesSelect = document.getElementById('Bones');
-		var controlObjectElm = document.getElementById('controls-object');
 
 		/*Loading Bones*/
 		BonesSelect.addEventListener('change',function(){
@@ -597,8 +599,8 @@
 		},false);
 
 		/*Select & Edit Object*/
-		document.addEventListener('touchstart', onDocumentTouchStart);
-		document.addEventListener('click', onDocumentMouseDown);
+		canvas.addEventListener('touchstart', onDocumentTouchStart);
+		canvas.addEventListener('click', onDocumentMouseDown);
 		function onDocumentTouchStart(event) {    
 			var mouse3D = new THREE.Vector3( ( event.touches[0].clientX / window.innerWidth ) * 2 - 1,   
 									-( event.touches[0].clientY / window.innerHeight ) * 2 + 1,  
@@ -607,9 +609,13 @@
 			raycaster.setFromCamera( mouse3D, camera );
 			var intersects = raycaster.intersectObjects( objects );
 			if ( intersects.length > 0 ) {
-				controlObject.attach(intersects[0].object);
-				onBoneSelect(intersects[0].object);
 				//intersects[ 0 ].object.material.color.setHex( Math.random() * 0xffffff );
+				controlObject.attach(intersects[ 0 ].object);
+				onBoneSelect(intersects[0].object);
+				state.selectedBone.push(intersects[0].object);
+			}else{
+				controlObject.detach(state.selectedBone[0]);
+				state.selectedBone = [];
 			}
 		}
 
@@ -621,8 +627,16 @@
 			raycaster.setFromCamera( mouse3D, camera );
 			var intersects = raycaster.intersectObjects( objects );
 			if ( intersects.length > 0 ) {
+				if(event.altKey){
+					//console.log('selected')
+					state.selectedBones.push(intersects[ 0 ].object);
+				}
 				controlObject.attach(intersects[ 0 ].object);
 				onBoneSelect(intersects[0].object);
+				state.selectedBone.push(intersects[0].object);
+			}else{
+				controlObject.detach(state.selectedBone[0]);
+				state.selectedBone = [];
 			}
 		}
 
@@ -640,7 +654,7 @@
 		// Bones editor
 		function boneFolderEditor (bone){
 			var prams = {
-				color: 0xff0000
+				color: bone.material.color.getStyle()
 			}
 			var boneFolder = gui.addFolder(bone.name);
 			    boneFolder.open();
@@ -650,7 +664,7 @@
 			});
 			boneFolder.addColor(prams,'color').onChange(function(){
 				var colorObj = new THREE.Color( prams.color );
-				//var hex = colorObj.getHexString();
+				// var hex = colorObj.getHexString();
 				var css = colorObj.getStyle();
 				bone.material.color.set(css);
 			})
@@ -677,18 +691,19 @@
 //___Bones_Selection______________________________________________________________________
 //////////////////////////////////////////////////////////////////////////////////////////
 
-		window.addEventListener('click',function(event){
-			switch ( event.keyCode ){
-				case 17 :
-					var SelectedBones = new THREE.Group();
-					SelectedBones.name = 'SelectedBones';
+		// canvas.addEventListener('click',function(event){
+		// 	console.log(event);
+		// 	switch ( event.keyCode ){
+		// 		case 17 :
+		// 			var SelectedBones = new THREE.Group();
+		// 			SelectedBones.name = 'SelectedBones';
 
 
-				break;
+		// 		break;
 
-				default : false;
-			}
-		})
+		// 		default : false;
+		// 	}
+		// })
 
 
 //////////////////////////////////////////////////////////////////////////////////////////
