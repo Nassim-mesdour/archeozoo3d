@@ -117,14 +117,15 @@ body {
 
 .editor{
   position: absolute;
-  z-index: 402;
+  z-index: -100;
+  opacity:0;
   background-color: #0000009e;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
   transform: translateY(-800px);
-  transition: transform 0.5s ease-in-out;
+  transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out, z-index 0.5s ease-in-out;
 }
 
 .editorContain{

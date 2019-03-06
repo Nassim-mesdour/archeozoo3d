@@ -296,7 +296,7 @@
 			var addHole = document.getElementById('add_hole');
 			addHole.addEventListener('click',function(){
 				openEditor[0].setAttribute(
-					"style","transform: scale(0.8,0.8) translateY(0px); zoom:1.2;"
+					"style","transform: scale(0.8,0.8) translateY(0px); zoom:1.2;opacity:1;z-index:402;;"
 				)
 			},false);
 
@@ -304,14 +304,14 @@
 			addGrid.addEventListener('click',function(){
 				openHoleLevel();
 				openEditor[0].setAttribute(
-					"style","transform: scale(0.4,0.4) translateY(0px); zoom:2;"
+					"style","transform: scale(0.4,0.4) translateY(0px); zoom:2;opacity:1;z-index:402;"
 				)
 			},false);
 		})();
 		//open editor
 		openEditorManual = () => {
 			openEditor[0].setAttribute(
-				"style","transform: scale(0.8,0.8) translateY(0px); zoom:2;"
+				"style","transform: scale(0.8,0.8) translateY(0px); zoom:2;opacity:1;z-index:402;"
 			)
 		}
 
