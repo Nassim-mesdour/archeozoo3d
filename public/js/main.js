@@ -1,7 +1,7 @@
 		// chargement des textures 
 		var texture, texture3;
-		texture = new THREE.TextureLoader().load("../assets/images/hall_ground.jpg"); 
-		texture3 = new THREE.TextureLoader().load("../assets/images/hall_ground.png");
+		texture = new THREE.TextureLoader().load("./public/assets/images/hall_ground.jpg"); 
+		texture3 = new THREE.TextureLoader().load("./public/assets/images/hall_ground.png");
 		var camera, controls, controlObject, scene, renderer, canvas, canvas_container, gridHelper,
 		gui, customContainer, 
 		objects=[];
@@ -451,7 +451,7 @@
 				type.setAttribute('class','type '+randomString());
 				type.addEventListener('click',(event) => holeType(event,item),false);
 				var img = document.createElement('img');
-				img.setAttribute('src','images/hole/'+item);
+				img.setAttribute('src','./public/assets/images/hole/'+item);
 
 				type.appendChild(img);
 				editorContain.appendChild(type);

@@ -42,7 +42,7 @@ body {
 }
 
 .flex-container>div:hover{
-  box-shadow: 0 0 2px 2px #ffffff;
+  box-shadow: 0 0 5px 1px #888888
 } 
 
 .flex-container span{
@@ -54,7 +54,7 @@ body {
 }
 
 .flex-container .sub_menu_lft {
-  background-color: transparent;
+  background-color: #fff;
   width: 90px;
   margin: 5px;
   text-align: center;
@@ -68,7 +68,7 @@ body {
 
 
 .flex-container .sub_menu_top{
-  background-color: transparent;
+  background-color: #fff;
   width: 90px;
   margin: 5px;
   text-align: center;
@@ -117,14 +117,15 @@ body {
 
 .editor{
   position: absolute;
-  z-index: 402;
+  z-index: -100;
+  opacity:0;
   background-color: #0000009e;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  transform: scale(0,0);
-  transition: transform 0.2s ease-in-out;
+  transform: translateY(-800px);
+  transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out, z-index 0.5s ease-in-out;
 }
 
 .editorContain{
@@ -140,8 +141,29 @@ body {
   margin: auto 50px;
   height: auto;
   padding: 15px;
-  transition: 0.3s ease-out; 
+  transition: 0.4s ease-in-out; 
   transition-property: transform, opacity;
+}
+
+.editorContain .holeLevel>input{
+  border: none;
+  border-radius: 3px;
+  padding: 7px 32px 7px 7px;
+  font-size: 15px;
+  font-family: sans-serif;
+}
+
+.editorContain .holeLevel>button{
+  position: relative;
+  left: -32px;
+  font-size: 15px;
+  border: 0;
+  border-top-right-radius: 3px;
+  border-bottom-right-radius: 3px;
+  padding: 7px;
+  background: #cacaca;
+  font-family: sans-serif;
+  cursor: pointer;
 }
 
 .editorContain .type{
@@ -224,9 +246,9 @@ body {
   font-size: 42px;
   font-weight: bold;
   color: #fff;
+  background: #515151;
   cursor: pointer;
 }
-
 /* gui overStyle */
 #gui-container { 
   position: absolute; 
