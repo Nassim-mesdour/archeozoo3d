@@ -1,12 +1,13 @@
-var camera, controls, controlObject, scene, renderer, canvas, canvas_container, texture, gridHelper,
+// chargement des textures 
+var texture, texture3;
+texture = new THREE.TextureLoader().load("../assets/images/hall_ground.jpg"); 
+texture3 = new THREE.TextureLoader().load("../assets/images/hall_ground.png");
+
+var camera, controls, controlObject, scene, renderer, canvas, canvas_container, gridHelper,
 gui, customContainer, 
 objects=[];
 var groupHole = new THREE.Group(); groupHole.name = 'Hole';
 var groupBones = new THREE.Group(); groupBones.name = 'Bones';
-
-// chargement des textures 
-texture = new THREE.TextureLoader().load("../assets/images/hall_ground.jpg"); 
-texture3 = new THREE.TextureLoader().load("../assets/images/hall_ground.png");
 
 //canvas domHtmlDocument
 canvas = document.getElementById('renderer');
