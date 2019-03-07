@@ -1,4 +1,8 @@
-		var camera, controls, controlObject, scene, renderer, canvas, canvas_container, texture, gridHelper,
+		// chargement des textures 
+		var texture, texture3;
+		texture = new THREE.TextureLoader().load("../images/hall_ground.jpg"); 
+		texture3 = new THREE.TextureLoader().load("../images/hall_ground.png");
+		var camera, controls, controlObject, scene, renderer, canvas, canvas_container, gridHelper,
 		gui, customContainer, 
 		objects=[];
 		state = {
@@ -15,10 +19,6 @@
 		var groupBones = new THREE.Group(); groupBones.name = 'Bones';
 		var groupBonesSelected = new THREE.Group(); groupBones.name = 'Bones';
 		var groupGridLevel = new THREE.Group(); groupGridLevel.name = 'gridlavel';
-		
-		// chargement des textures 
-		texture = new THREE.TextureLoader().load("../images/hall_ground.jpg"); 
-		texture3 = new THREE.TextureLoader().load("../images/hall_ground.png");
 
 		//canvas domHtmlDocument
 		canvas = document.getElementById('renderer');
