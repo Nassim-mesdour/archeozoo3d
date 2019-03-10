@@ -592,7 +592,13 @@
 					
 					//if ( child.isMesh ) child.material.map = texture;
 				} );
-				groupBones.add( object );
+				var box = new THREE.BoxHelper( object, 0xffff00 );
+				box.update();
+				box.setFromObject(object);
+				console.log(box);
+				groupBones.add(object)
+				groupBones.add( box );
+				objects.push(box);
 			}
 			reader.readAsText(file);
 			closeEditor.click();
@@ -649,7 +655,24 @@
 			}else{
 				boneFolderEditor(bone);
 			}
+			// boneDeleteButton(bone);
 		}
+
+		// function boneDeleteButton (bone){
+		// 	var material = new THREE.LineBasicMaterial({
+		// 		color: 0x0000ff
+		// 	});
+			
+		// 	var geometry = new THREE.Geometry();
+		// 	geometry.vertices.push(
+		// 		new THREE.Vector3( 0, 0, 0 ),
+		// 		new THREE.Vector3( 0, 10, 0 )
+		// 	);
+			
+		// 	var line = new THREE.Line( geometry, material );
+		// 	//line.translateX()
+		// 	bone.add( line );
+		// }
 
 		// Bones editor
 		function boneFolderEditor (bone){
