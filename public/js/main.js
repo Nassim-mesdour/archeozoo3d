@@ -77,6 +77,7 @@
 			for(i = object.children[1].children.length - 1 ; i>=0 ;i--){
 				groupBones.add(object.children[1].children[i]);
 			}
+			groupGridLevel.copy(object.children[2]);
 			closeEditor.click();
 			loadingEnd();
 			progress.setAttribute('style','width:0%;');
@@ -210,7 +211,6 @@
 			requestAnimationFrame( animate );
 			state.animation.play ? gridHelper.rotation.y += 0.005 : gridHelper.rotation.y = gridHelper.rotation.y;
 			controls.update(); // only required if controls.enableDamping = true, or if controls.autoRotate = true
-			boxHelper.update();
 			renderer.render( scene, camera );
 		}
 
@@ -552,7 +552,7 @@
 				closeEditor.click();
 				return;
 			}
-			gridHelperLevel = new THREE.GridHelper(200,40);
+			gridHelperLevel = new THREE.GridHelper(200,40,0xffffff,Math.random() * 0xffffff);
 			holeSize = groupHole.scale;
 			gridHelperLevel.scale.set(holeSize.x,holeSize.y,holeSize.z);
 			gridHelperLevel.position.set(0,value[0].valueAsNumber,0)
@@ -593,12 +593,7 @@
 					
 					//if ( child.isMesh ) child.material.map = texture;
 				} );
-				boxHelper = new THREE.BoxHelper( object, 0xffff00 );
-				//box.setFromObject(object);
-				console.log(box);
 				groupBones.add(object)
-				groupBones.add( box );
-				objects.push(box);
 			}
 			reader.readAsText(file);
 			closeEditor.click();
@@ -677,7 +672,20 @@
 		// Bones editor
 		function boneFolderEditor (bone){
 			var prams = {
-				color: bone.material.color.getStyle()
+				selectedBone : bone,
+				color: bone.material.color.getStyle(),
+				delete:function(){
+					groupBones.remove(groupBones.getChildByName(bone.name))
+					controlObject.detach(bone.children[1]);
+					objectToDelete = {};
+					// Object.keys(objects).map((key,index) =>{
+					// 	//console.log(objects[key]);
+					// 	if(objects[key].name === bone.name){
+					// 		delete objects[key]
+					// 	}
+					// })
+					console.log(objects)
+				}
 			}
 			var boneFolder = gui.addFolder(bone.name);
 			    boneFolder.open();
@@ -694,6 +702,10 @@
 			boneFolder.add(controlObject, 'mode', { Translate: "translate", Rotate: "rotate" } ).onChange(function(value){
 				controlObject.setMode(value);
 			})
+			boneFolder.add(bone.position, 'x', -600, 600);
+			boneFolder.add(bone.position, 'y', -600, 600);
+			boneFolder.add(bone.position, 'z', -600, 600);
+			gui.add(prams, 'delete').onClick;
 			objectSatate = {
 				objectSlected : bone.name 
 			} 
