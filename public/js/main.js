@@ -3,7 +3,7 @@
 		texture = new THREE.TextureLoader().load("../images/hall_ground.jpg"); 
 		texture3 = new THREE.TextureLoader().load("../images/hall_ground.png");
 		var camera, controls, controlObject, scene, renderer, canvas, canvas_container, gridHelper,
-		gui, customContainer, 
+		gui, customContainer, boxHelper,
 		objects=[];
 		state = {
 			animation : {
@@ -210,6 +210,7 @@
 			requestAnimationFrame( animate );
 			state.animation.play ? gridHelper.rotation.y += 0.005 : gridHelper.rotation.y = gridHelper.rotation.y;
 			controls.update(); // only required if controls.enableDamping = true, or if controls.autoRotate = true
+			boxHelper.update();
 			renderer.render( scene, camera );
 		}
 
@@ -592,9 +593,8 @@
 					
 					//if ( child.isMesh ) child.material.map = texture;
 				} );
-				var box = new THREE.BoxHelper( object, 0xffff00 );
-				box.update();
-				box.setFromObject(object);
+				boxHelper = new THREE.BoxHelper( object, 0xffff00 );
+				//box.setFromObject(object);
 				console.log(box);
 				groupBones.add(object)
 				groupBones.add( box );
