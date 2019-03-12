@@ -338,7 +338,7 @@
 //__Holes Controls________________________________________________________________________
 //////////////////////////////////////////////////////////////////////////////////////////
 
-		var  imageHole=['geometry.png','cylinder.png','triangle.png'],
+		var  imageHole=['geometry.png','cylinder.png'],
 		sceneState = {
 			holeType : ""
 		}
@@ -353,6 +353,17 @@
 		/* choose hole type */
 		holeType = (e,item) => {
 			closeHoleSelector();
+			var prams = {
+				visible : false,
+				delete:function(){
+					var i = groupHole.children.length -1;
+					for(i ; i>=0 ; i--){
+						groupHole.remove(groupHole.children[i]);
+					}
+					gui.removeFolder(gui.__folders['hole']);
+					groupHole.name = ""; sceneState.holeType = "";
+				}
+			}
 			if(scene.getObjectByName(item) !== undefined & sceneState.holeType === item){
 				return;
 			}
@@ -376,6 +387,10 @@
 				hole.add(groupHole.scale, 'z', 1, 6).name('Height').onChange(function(e){
 					groupGridLevel.scale.z = e;
 				});
+				hole.add(groupHole, 'visible', [false, true]).onChange(function(value){
+					value == "true" ? groupHole.visible = true : groupHole.visible = false;
+				});
+				hole.add(prams, 'delete').onClick;
 			hole.open;
 			switch (item) {
 				case "geometry.png":
@@ -413,26 +428,7 @@
 					groundPlane.rotateX(Math.PI * -0.5);
 					groupHole.add(groundPlane);
 				break;
-				case "triangle.png":
-					holeBaseGeo = new THREE.CircleBufferGeometry( 200, 3 );
-					holeBaseGeo.rotateX(Math.PI * 0.5);
-					holeBaseGeo.translate(-50,0,0)
-					holeBasePlane = new THREE.Mesh(holeBaseGeo, new THREE.MeshPhongMaterial({map: texture3, opacity: 0.9, transparent: true, side: THREE.DoubleSide}) );
-					groupHole.add(holeBasePlane);
 
-					holeGeo = new THREE.CylinderBufferGeometry( 200, 200, 100, 3 ,0,true);
-					holeGeo.rotateY(Math.PI * -0.167);
-					holeGeo.translate(-50,50,0);
-					holePlane = new THREE.Mesh(holeGeo, new THREE.MeshPhongMaterial({map: texture3, opacity: 0.9, transparent: true, side: THREE.DoubleSide}) );
-					groupHole.add(holePlane);
-
-					// groundGeo = new THREE.RingBufferGeometry( 200, 400, 3 );
-					// groundGeo.translate(-50,0,100);
-					// groundGeo.rotateX(Math.PI * -0.5);
-					// groundPlane = new THREE.Mesh( groundGeo, new THREE.MeshPhongMaterial({map: texture, side: THREE.DoubleSide}) );
-					// groupHole.add( groundPlane );
-				break;
-			
 				default:
 					break;
 			}
@@ -610,7 +606,6 @@
 			raycaster.setFromCamera( mouse3D, camera );
 			var intersects = raycaster.intersectObjects( objects );
 			if ( intersects.length > 0 ) {
-				//intersects[ 0 ].object.material.color.setHex( Math.random() * 0xffffff );
 				controlObject.attach(intersects[ 0 ].object);
 				onBoneSelect(intersects[0].object);
 				state.selectedBone.push(intersects[0].object);
@@ -629,7 +624,6 @@
 			var intersects = raycaster.intersectObjects( objects );
 			if ( intersects.length > 0 ) {
 				if(event.altKey){
-					//console.log('selected')
 					state.selectedBones.push(intersects[ 0 ].object);
 				}
 				controlObject.attach(intersects[ 0 ].object);
@@ -672,19 +666,13 @@
 		// Bones editor
 		function boneFolderEditor (bone){
 			var prams = {
-				selectedBone : bone,
 				color: bone.material.color.getStyle(),
 				delete:function(){
-					groupBones.remove(groupBones.getChildByName(bone.name))
 					controlObject.detach(bone.children[1]);
-					objectToDelete = {};
-					// Object.keys(objects).map((key,index) =>{
-					// 	//console.log(objects[key]);
-					// 	if(objects[key].name === bone.name){
-					// 		delete objects[key]
-					// 	}
-					// })
-					console.log(objects)
+					groupBones.remove(groupBones.getObjectByName(bone.name))
+					var newObjects = objects.filter(child => child.name !== bone.name)
+					objects = [...newObjects];
+					gui.removeFolder(gui.__folders[bone.name]);
 				}
 			}
 			var boneFolder = gui.addFolder(bone.name);
@@ -705,7 +693,7 @@
 			boneFolder.add(bone.position, 'x', -600, 600);
 			boneFolder.add(bone.position, 'y', -600, 600);
 			boneFolder.add(bone.position, 'z', -600, 600);
-			gui.add(prams, 'delete').onClick;
+			boneFolder.add(prams, 'delete').onClick;
 			objectSatate = {
 				objectSlected : bone.name 
 			} 
