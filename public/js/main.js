@@ -583,6 +583,7 @@
 					//if ( child.isMesh ) child.material.map = texture;
 				} );
 				groupBones.add(object);
+				addBoneToTree(file.name);
 				//var box = new THREE.BoxHelper(object, 0xffffff);
 				//groupBones.add(box);
 			}
@@ -686,22 +687,37 @@
 #
 #
 */
-//___Bones_Selection______________________________________________________________________
+//___Bones_Tree___________________________________________________________________________
 //////////////////////////////////////////////////////////////////////////////////////////
+		var boneList =  document.getElementById('bones-tree').children[0];
+		var groupTree = document.getElementById('bones-tree').children[2];
+		var newGroup = document.getElementsByName("new_group")[0];
 
-		// canvas.addEventListener('click',function(event){
-		// 	console.log(event);
-		// 	switch ( event.keyCode ){
-		// 		case 17 :
-		// 			var SelectedBones = new THREE.Group();
-		// 			SelectedBones.name = 'SelectedBones';
+		// on add group event
+		newGroup.addEventListener("click",addGroupToGroupTree,false);
 
+		function addGroupToGroupTree(){
+			var ul = document.createElement('ul');
 
-		// 		break;
+			var inputGroupName = document.createElement('input');
+			inputGroupName.type = "text";
+			inputGroupName.name = "group_name";
+			inputGroupName.placeholder = "Group Name ...";
 
-		// 		default : false;
-		// 	}
-		// })
+			var li = document.createElement('li');
+			li.textContent = "drag bone here ..";
+
+			ul.appendChild(inputGroupName);
+			ul.appendChild(li);
+			groupTree.appendChild(ul);
+		}
+
+		function addBoneToTree(boneName){
+			var li = document.createElement('li');
+			li.textContent = boneName;
+			boneList.appendChild(li);
+		}
+
 
 
 //////////////////////////////////////////////////////////////////////////////////////////

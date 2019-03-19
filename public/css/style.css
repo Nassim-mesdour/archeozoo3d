@@ -261,7 +261,7 @@ body {
 
 /* Tree Bones */
 
-#treeBones-container{
+#bones-control{
   position: absolute;
   z-index: 10;
   right: 0;
@@ -270,22 +270,79 @@ body {
   width: 245px;
   background: #292929;
   border-left: 3px solid black;
+  overflow-x: hidden;
 }
 
-#treeBones-container>p{
-  color: #fff;
-  text-align: center;
-  background: black;
+#bones-tree>p{
+  border-bottom: 1px solid #ff8900;
+  padding: 7px 0;
   margin: 0;
-  padding: 5px;
-  box-shadow: 6px -3px 0px 6px #353535;
+  font-size: 15px;
+  text-align: center;
 }
 
-.lkd{
+.bones_tree{
   position: relative;
   background: black;
   color: #fff;
   z-index: 10;
   top: 50px;
   right: 0px;
+  padding: 10px;
+}
+
+.bones_tree .tree>ul{
+  border-bottom: 1px solid #ff8900;
+  padding-left: 0;
+  font-size: 15px;
+}
+
+.bones_tree .tree>ul>input{
+  border: 0;
+  background: #171717;
+  color: #fff;
+  padding: 6px 10px;
+  border-radius: 2px;
+}
+
+.bones_tree .tree>ul>li{
+  list-style: square;
+  list-style-position: inside;
+  padding: 7px;
+  margin: 2px 0px;
+  padding-left: 30px;
+  transition: 0.1s ease-in-out;
+}
+
+.bones_tree .tree>ul>li:hover{
+  background-color: #292929;
+  cursor: pointer;
+}
+
+.bones_tree .bonesList>li{
+  list-style: circle;
+  list-style-position: inside;
+  padding: 7px;
+  margin: 2px 0px;
+  padding-left: 10px;
+  transition: 0.1s ease-in-out;
+}
+
+.bones_tree .bonesList>li:hover{
+  background-color: #292929;
+  cursor: pointer;
+}
+/* new group button style*/
+
+input[name='new_group']{
+  position: relative;
+  right: -67px;
+  margin: 10px 0 0 0;
+  border-radius: 3px;
+  font-weight: bold;
+  font-size: 13px;
+  border: none;
+  padding: 5px;
+  cursor: pointer;
+  background: #ff8900;
 }
