@@ -3,8 +3,8 @@
 		texture = new THREE.TextureLoader().load("../images/hall_ground.jpg"); 
 		texture3 = new THREE.TextureLoader().load("../images/hall_ground.png");
 		var camera, controls, controlObject, scene, renderer, canvas, canvas_container, gridHelper,
-		gui, customContainer, boxHelper,
-		objects=[];
+		gui, customContainer, boxHelper, requestAnimation, requestAnimation2;
+		objects=[], boxToUpdate=[],
 		state = {
 			animation : {
 				play : false,
@@ -135,8 +135,11 @@
 			//renderer
 			renderer = new THREE.WebGLRenderer({canvas:canvas,antialias: true,clearAlpha:0});
 			renderer.setPixelRatio( window.devicePixelRatio );
-			renderer.setSize( canvas_container[0].clientWidth, canvas_container[0].clientHeight );
-			camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 1, 4000 );
+			renderer.setSize( canvas_container[0].clientWidth , canvas_container[0].clientHeight);
+			
+			//camera
+
+			camera = new THREE.PerspectiveCamera( 60, canvas_container[0].clientWidth / canvas_container[0].clientHeight, 1, 4000 );
 			camera.position.set( 800, 800, 0 );
 			
 			// controls
@@ -147,7 +150,6 @@
 			controls.minDistance = 10;
 			controls.maxDistance = 3000;
 			controls.maxPolarAngle = Math.PI;
-
 			
 			//controls Object
 			controlObject = new THREE.TransformControls( camera, canvas );
@@ -203,13 +205,14 @@
 			window.addEventListener( 'resize', onWindowResize, false );
 		}
 		function onWindowResize(){
-			camera.aspect = window.innerWidth / window.innerHeight;
+			camera.aspect = canvas_container[0].clientWidth / canvas_container[0].clientHeight;
 			camera.updateProjectionMatrix();
-			renderer.setSize( window.innerWidth, window.innerHeight );
+			renderer.setSize(canvas_container[0].clientWidth, canvas_container[0].clientHeight)
 		}
 		function animate(){
-			requestAnimationFrame( animate );
-			state.animation.play ? gridHelper.rotation.y += 0.005 : gridHelper.rotation.y = gridHelper.rotation.y;
+			requestAnimation = requestAnimationFrame( animate );
+			state.animation.play ? (gridHelper.rotation.y += 0.005) : 
+									(gridHelper.rotation.y = gridHelper.rotation.y);
 			controls.update(); // only required if controls.enableDamping = true, or if controls.autoRotate = true
 			renderer.render( scene, camera );
 		}
@@ -533,10 +536,6 @@
 #
 #
 #
-#
-#
-#
-#
 */
 //__hole_level____________________________________________________________________________
 //////////////////////////////////////////////////////////////////////////////////////////	
@@ -550,7 +549,6 @@
 			}
 			gridHelperLevel = new THREE.GridHelper(200,40,0xffffff,Math.random() * 0xffffff);
 			holeSize = groupHole.scale;
-			gridHelperLevel.scale.set(holeSize.x,holeSize.y,holeSize.z);
 			gridHelperLevel.position.set(0,value[0].valueAsNumber,0)
 			groupGridLevel.add(gridHelperLevel);
 			closeEditor.click();
@@ -559,10 +557,6 @@
 //////////////////////////////////////////////////////////////////////////////////////////
 //________________________________________________________________________________________
 /*
-#
-#
-#
-#
 #
 #
 #
@@ -586,10 +580,11 @@
 				object.traverse( function ( child ) {
 					child.name = file.name;
 					objects.push(child);
-					
 					//if ( child.isMesh ) child.material.map = texture;
 				} );
-				groupBones.add(object)
+				groupBones.add(object);
+				//var box = new THREE.BoxHelper(object, 0xffffff);
+				//groupBones.add(box);
 			}
 			reader.readAsText(file);
 			closeEditor.click();
@@ -616,8 +611,8 @@
 		}
 
 		function onDocumentMouseDown (event){    
-			var mouse3D = new THREE.Vector3( ( event.clientX / window.innerWidth ) * 2 - 1,
-									-( event.clientY / window.innerHeight ) * 2 + 1,
+			var mouse3D = new THREE.Vector3( ( event.clientX / canvas_container[0].clientWidth ) * 2 - 1,
+									-( event.clientY / canvas_container[0].clientHeight ) * 2 + 1,
 									0.5 );
 			var raycaster =  new THREE.Raycaster();                                        
 			raycaster.setFromCamera( mouse3D, camera );
@@ -627,6 +622,7 @@
 					state.selectedBones.push(intersects[ 0 ].object);
 				}
 				controlObject.attach(intersects[ 0 ].object);
+				console.log(intersects[0].object);
 				onBoneSelect(intersects[0].object);
 				state.selectedBone.push(intersects[0].object);
 			}else{
@@ -644,24 +640,7 @@
 			}else{
 				boneFolderEditor(bone);
 			}
-			// boneDeleteButton(bone);
 		}
-
-		// function boneDeleteButton (bone){
-		// 	var material = new THREE.LineBasicMaterial({
-		// 		color: 0x0000ff
-		// 	});
-			
-		// 	var geometry = new THREE.Geometry();
-		// 	geometry.vertices.push(
-		// 		new THREE.Vector3( 0, 0, 0 ),
-		// 		new THREE.Vector3( 0, 10, 0 )
-		// 	);
-			
-		// 	var line = new THREE.Line( geometry, material );
-		// 	//line.translateX()
-		// 	bone.add( line );
-		// }
 
 		// Bones editor
 		function boneFolderEditor (bone){
@@ -706,10 +685,6 @@
 #
 #
 #
-#
-#
-#
-#
 */
 //___Bones_Selection______________________________________________________________________
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -732,10 +707,6 @@
 //////////////////////////////////////////////////////////////////////////////////////////
 //________________________________________________________________________________________
 /*
-#
-#
-#
-#
 #
 #
 #
