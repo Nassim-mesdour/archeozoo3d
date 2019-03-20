@@ -297,6 +297,21 @@ body {
   font-size: 15px;
 }
 
+.bones_tree .tree>ul>span{
+  position: relative;
+  top: 0px;
+  right: -184px;
+  color: #d3d3d3;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.1s ease-in-out;
+  opacity: 0;
+}
+
+.bones_tree .tree>ul:hover span{
+  opacity: 1;
+}
+
 .bones_tree .tree>ul>input{
   border: 0;
   background: #171717;

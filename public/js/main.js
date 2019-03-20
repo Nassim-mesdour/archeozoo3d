@@ -695,9 +695,16 @@
 
 		// on add group event
 		newGroup.addEventListener("click",addGroupToGroupTree,false);
-
 		function addGroupToGroupTree(){
+			var id = randomString(8);
 			var ul = document.createElement('ul');
+			ul.setAttribute("id",id);
+
+			var span = document.createElement('span');
+			span.className = "fa fa-trash-alt";
+			span.addEventListener("click",function(){
+				this.parentElement.remove();
+			},false);
 
 			var inputGroupName = document.createElement('input');
 			inputGroupName.type = "text";
@@ -707,6 +714,7 @@
 			var li = document.createElement('li');
 			li.textContent = "drag bone here ..";
 
+			ul.appendChild(span);
 			ul.appendChild(inputGroupName);
 			ul.appendChild(li);
 			groupTree.appendChild(ul);
@@ -715,9 +723,14 @@
 		function addBoneToTree(boneName){
 			var li = document.createElement('li');
 			li.textContent = boneName;
+			li.id = 'drag1';
+			li.setAttribute("draggable","true");
+			li.addEventListener("dragstart",function (e){
+				e.dataTransfer.setData("text", e.target.id);
+				console.log("bonjour");
+			} );
 			boneList.appendChild(li);
 		}
-
 
 
 //////////////////////////////////////////////////////////////////////////////////////////
