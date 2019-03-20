@@ -689,7 +689,7 @@
 */
 //___Bones_Tree___________________________________________________________________________
 //////////////////////////////////////////////////////////////////////////////////////////
-		var boneList =  document.getElementById('bones-tree').children[0];
+		var boneList =  document.getElementById('bones-tree').children[1];
 		var groupTree = document.getElementById('bones-tree').children[2];
 		var newGroup = document.getElementsByName("new_group")[0];
 
@@ -699,6 +699,23 @@
 			var id = randomString(8);
 			var ul = document.createElement('ul');
 			ul.setAttribute("id",id);
+			ul.setAttribute("class","drop-disabled group");
+			ul.addEventListener("dragenter",function (e){ 
+				e.preventDefault(); 
+				this.classList.replace('drop-disabled','drop-enabled');
+			});
+			ul.addEventListener("dragend",function (e){ 
+				e.preventDefault(); 
+				var group = document.getElementsByClassName("group");
+				[].forEach.call(group, el => {
+					el.classList.replace('drop-enabled','drop-disabled');
+				});
+			});
+			ul.addEventListener("drop",function drop(e) {
+				e.preventDefault();
+				var data = e.dataTransfer.getData("text");
+				this.insertAdjacentElement("beforeend",document.getElementById(data));
+			})
 
 			var span = document.createElement('span');
 			span.className = "fa fa-trash-alt";
@@ -711,24 +728,27 @@
 			inputGroupName.name = "group_name";
 			inputGroupName.placeholder = "Group Name ...";
 
-			var li = document.createElement('li');
-			li.textContent = "drag bone here ..";
-
 			ul.appendChild(span);
 			ul.appendChild(inputGroupName);
-			ul.appendChild(li);
 			groupTree.appendChild(ul);
 		}
 
 		function addBoneToTree(boneName){
+			var id = randomString(8);
 			var li = document.createElement('li');
 			li.textContent = boneName;
-			li.id = 'drag1';
+			li.id = id;
 			li.setAttribute("draggable","true");
+			li.addEventListener("mouseover",function (e){
+				controls.enabled = false; controlObject.enabled = false;
+			});	
+			li.addEventListener("mouseleave",function (e){
+				controls.enabled = true; controlObject.enabled = true;
+			});	
 			li.addEventListener("dragstart",function (e){
 				e.dataTransfer.setData("text", e.target.id);
-				console.log("bonjour");
-			} );
+				e.dataTransfer.setData("idparent", e.target.parentElement.id);
+			});
 			boneList.appendChild(li);
 		}
 

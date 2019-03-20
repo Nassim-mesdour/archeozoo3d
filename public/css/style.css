@@ -273,14 +273,6 @@ body {
   overflow-x: hidden;
 }
 
-#bones-tree>p{
-  border-bottom: 1px solid #ff8900;
-  padding: 7px 0;
-  margin: 0;
-  font-size: 15px;
-  text-align: center;
-}
-
 .bones_tree{
   position: relative;
   background: black;
@@ -291,10 +283,20 @@ body {
   padding: 10px;
 }
 
-.bones_tree .tree>ul{
-  border-bottom: 1px solid #ff8900;
-  padding-left: 0;
+.bones_tree>p{
+  padding: 0 0 10px;
+  margin: 0;
   font-size: 15px;
+  text-align: center;
+}
+
+.bones_tree .tree>ul{
+  border-top: 3px solid #ff8900;
+  padding-left: 0;
+  margin: 10px 0px;
+  padding-top: 10px;
+  font-size: 15px;
+  transition: 0.1s ease-in-out;
 }
 
 .bones_tree .tree>ul>span{
@@ -334,6 +336,14 @@ body {
   cursor: pointer;
 }
 
+.bones_tree .bonesList{
+  background: #292929;
+  margin-bottom: 10px;
+  height: 100px;
+  border: 1px solid #3279b3;
+  overflow-x: hidden;
+}
+
 .bones_tree .bonesList>li{
   list-style: circle;
   list-style-position: inside;
@@ -346,6 +356,16 @@ body {
 .bones_tree .bonesList>li:hover{
   background-color: #292929;
   cursor: pointer;
+}
+
+.drop-enabled{
+  border: 3px dashed #ff8900;
+  opacity: 0.6;
+}
+
+.drop-disabled{
+  border: none;
+  opacity: 1;
 }
 /* new group button style*/
 
