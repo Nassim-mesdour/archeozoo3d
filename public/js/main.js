@@ -564,10 +564,13 @@
 */
 //__Bones_Controls________________________________________________________________________
 //////////////////////////////////////////////////////////////////////////////////////////
-		var objectSatate = {
-			objectSlected : undefined
+		var guiFoldetState = { // memorize gui folders
+			objectSlected : undefined,
+			open : true
 		}
 		var BonesSelect = document.getElementById('Bones');
+		var boneList =  document.getElementById('bonesList');
+		var groupTree = document.getElementById('groupTree');
 
 		/*Loading Bones*/
 		BonesSelect.addEventListener('change',function(){
@@ -583,20 +586,17 @@
 					//if ( child.isMesh ) child.material.map = texture;
 				} );
 				groupBones.add(object);
-				addBoneToTree(file.name);
-				//var box = new THREE.BoxHelper(object, 0xffffff);
-				//groupBones.add(box);
+				addBoneToTree(file.name,object.uuid);
 			}
 			reader.readAsText(file);
 			closeEditor.click();
 		},false);
-
-		/*Select & Edit Object*/
+		
+		// attach bone to Objectcontrol (Option for touchScreen handeler)
 		canvas.addEventListener('touchstart', onDocumentTouchStart);
-		canvas.addEventListener('click', onDocumentMouseDown);
 		function onDocumentTouchStart(event) {    
-			var mouse3D = new THREE.Vector3( ( event.touches[0].clientX / window.innerWidth ) * 2 - 1,   
-									-( event.touches[0].clientY / window.innerHeight ) * 2 + 1,  
+			var mouse3D = new THREE.Vector3( ( event.touches[0].clientX / canvas_container[0].clientWidth ) * 2 - 1,   
+									-( event.touches[0].clientY / canvas_container[0].clientHeight ) * 2 + 1,  
 									0.5 );     
 			var raycaster =  new THREE.Raycaster();                                        
 			raycaster.setFromCamera( mouse3D, camera );
@@ -604,6 +604,7 @@
 			if ( intersects.length > 0 ) {
 				controlObject.attach(intersects[ 0 ].object);
 				onBoneSelect(intersects[0].object);
+				state.selectedBone = [];
 				state.selectedBone.push(intersects[0].object);
 			}else{
 				controlObject.detach(state.selectedBone[0]);
@@ -611,6 +612,8 @@
 			}
 		}
 
+		// attach bone to Objectcontrol (Option for mouse handeler)
+		canvas.addEventListener('click', onDocumentMouseDown);
 		function onDocumentMouseDown (event){    
 			var mouse3D = new THREE.Vector3( ( event.clientX / canvas_container[0].clientWidth ) * 2 - 1,
 									-( event.clientY / canvas_container[0].clientHeight ) * 2 + 1,
@@ -619,12 +622,9 @@
 			raycaster.setFromCamera( mouse3D, camera );
 			var intersects = raycaster.intersectObjects( objects );
 			if ( intersects.length > 0 ) {
-				if(event.altKey){
-					state.selectedBones.push(intersects[ 0 ].object);
-				}
 				controlObject.attach(intersects[ 0 ].object);
-				console.log(intersects[0].object);
 				onBoneSelect(intersects[0].object);
+				state.selectedBone = [];
 				state.selectedBone.push(intersects[0].object);
 			}else{
 				controlObject.detach(state.selectedBone[0]);
@@ -632,18 +632,17 @@
 			}
 		}
 
+		// Add and delete gui folder for controling bones (size, scale, position, color ...)
 		function onBoneSelect (bone){
-			if(gui.__folders[objectSatate.objectSlected] !== undefined & gui.__folders[objectSatate.objectSlected] === bone.name){
+			if(gui.__folders[guiFoldetState.objectSlected] !== undefined & gui.__folders[guiFoldetState.objectSlected] === bone.name){
 				return;
-			}else if(gui.__folders[objectSatate.objectSlected] !== undefined & gui.__folders[objectSatate.objectSlected] !== bone.name){
-				gui.removeFolder(gui.__folders[objectSatate.objectSlected]);
+			}else if(gui.__folders[guiFoldetState.objectSlected] !== undefined & gui.__folders[guiFoldetState.objectSlected] !== bone.name){
+				gui.removeFolder(gui.__folders[guiFoldetState.objectSlected]);
 				boneFolderEditor(bone);
 			}else{
 				boneFolderEditor(bone);
 			}
 		}
-
-		// Bones editor
 		function boneFolderEditor (bone){
 			var prams = {
 				color: bone.material.color.getStyle(),
@@ -674,7 +673,7 @@
 			boneFolder.add(bone.position, 'y', -600, 600);
 			boneFolder.add(bone.position, 'z', -600, 600);
 			boneFolder.add(prams, 'delete').onClick;
-			objectSatate = {
+			guiFoldetState = {
 				objectSlected : bone.name 
 			} 
 		}
@@ -689,8 +688,6 @@
 */
 //___Bones_Tree___________________________________________________________________________
 //////////////////////////////////////////////////////////////////////////////////////////
-		var boneList =  document.getElementById('bones-tree').children[1];
-		var groupTree = document.getElementById('bones-tree').children[2];
 		var newGroup = document.getElementsByName("new_group")[0];
 
 		// on add group event
@@ -733,11 +730,13 @@
 			groupTree.appendChild(ul);
 		}
 
-		function addBoneToTree(boneName){
+		function addBoneToTree(boneName,uuid){
 			var id = randomString(8);
 			var li = document.createElement('li');
 			li.textContent = boneName;
 			li.id = id;
+			li.className = "bone deselected";
+			li.setAttribute("data-uuid",uuid);
 			li.setAttribute("draggable","true");
 			li.addEventListener("mouseover",function (e){
 				controls.enabled = false; controlObject.enabled = false;
@@ -749,6 +748,24 @@
 				e.dataTransfer.setData("text", e.target.id);
 				e.dataTransfer.setData("idparent", e.target.parentElement.id);
 			});
+			
+			/* Select Object from tree & Edit*/
+			li.addEventListener("click",function onBoneSlectFromTree(e){
+				var boneSelected = groupBones.children.filter(bone => bone.uuid == e.target.dataset.uuid);
+				var bone = document.getElementsByClassName("bone");
+				[].forEach.call(bone, el => {
+					el.classList.replace('selected','deselected');
+				});
+				this.classList.replace("deselected","selected");
+				// console.log(boneSelected);
+				// var box = new THREE.BoxHelper(boneSelected[0].children[0], 0xffffff);
+				// boneSelected[0].add(box);
+				controlObject.attach(boneSelected[0].children[0]);
+				onBoneSelect(boneSelected[0].children[0]);
+				state.selectedBone = [];
+				state.selectedBone.push(boneSelected[0].children[0]);
+			},false);
+
 			boneList.appendChild(li);
 		}
 

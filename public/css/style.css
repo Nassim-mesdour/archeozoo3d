@@ -271,6 +271,20 @@ body {
   background: #292929;
   border-left: 3px solid black;
   overflow-x: hidden;
+  overflow: overlay;
+}
+
+#bones-control::-webkit-scrollbar {
+	width: 5px;
+}
+
+#bones-control::-webkit-scrollbar-track {
+	background-color: #000000;
+}
+
+#bones-control::-webkit-scrollbar-thumb {
+	background-color: #000000;
+	border: 1px solid #555555;
 }
 
 .bones_tree{
@@ -290,19 +304,22 @@ body {
   text-align: center;
 }
 
-.bones_tree .tree>ul{
+.bones_tree .groupTree>ul{
   border-top: 3px solid #ff8900;
+  background-color: #292929;
   padding-left: 0;
   margin: 10px 0px;
-  padding-top: 10px;
+  padding: 10px 0;
   font-size: 15px;
   transition: 0.1s ease-in-out;
 }
 
-.bones_tree .tree>ul>span{
-  position: relative;
-  top: 0px;
-  right: -184px;
+.bones_tree .groupTree>ul>span{
+  position: absolute;
+  z-index: 1;
+  float: right;
+  right: 35px;
+  margin-top: 6px;
   color: #d3d3d3;
   border-radius: 8px;
   cursor: pointer;
@@ -310,29 +327,28 @@ body {
   opacity: 0;
 }
 
-.bones_tree .tree>ul:hover span{
+.bones_tree .groupTree>ul:hover span{
   opacity: 1;
 }
 
-.bones_tree .tree>ul>input{
+.bones_tree .groupTree>ul>input{
+  display: block;
   border: 0;
   background: #171717;
+  width: auto;
   color: #fff;
   padding: 6px 10px;
+  margin: 0px auto 10px;
   border-radius: 2px;
 }
 
-.bones_tree .tree>ul>li{
+.bones_tree .groupTree>ul>li{
   list-style: square;
   list-style-position: inside;
   padding: 7px;
   margin: 2px 0px;
-  padding-left: 30px;
+  padding-left: 18px;
   transition: 0.1s ease-in-out;
-}
-
-.bones_tree .tree>ul>li:hover{
-  background-color: #292929;
   cursor: pointer;
 }
 
@@ -351,21 +367,24 @@ body {
   margin: 2px 0px;
   padding-left: 10px;
   transition: 0.1s ease-in-out;
-}
-
-.bones_tree .bonesList>li:hover{
-  background-color: #292929;
   cursor: pointer;
 }
 
+/*changing style*/
 .drop-enabled{
   border: 3px dashed #ff8900;
   opacity: 0.6;
 }
-
 .drop-disabled{
   border: none;
   opacity: 1;
+}
+
+.selected{
+  background-color: #171717;
+}
+.deselected{
+  background-color: none;
 }
 /* new group button style*/
 
