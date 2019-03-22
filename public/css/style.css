@@ -314,12 +314,31 @@ body {
   transition: 0.1s ease-in-out;
 }
 
+.bones_tree .groupTree>ul>label{
+  margin: 18px;
+  font-size: 11px;
+  position: relative;
+  top: -13px;
+  left: -18px;
+  padding: 3px;
+  background: #222222;
+  color: #ff8900;
+  font-weight: bold;
+}
+
+.bones_tree .groupTree>ul>label>input[name='move_group']{
+  cursor: pointer;
+  position: relative;
+  top: 3px;
+  right: -2px;
+}
+
 .bones_tree .groupTree>ul>span{
   position: absolute;
   z-index: 1;
   float: right;
   right: 35px;
-  margin-top: 6px;
+  margin-top: 25px;
   color: #d3d3d3;
   border-radius: 8px;
   cursor: pointer;
@@ -346,7 +365,6 @@ body {
   list-style: square;
   list-style-position: inside;
   padding: 7px;
-  margin: 2px 0px;
   padding-left: 18px;
   transition: 0.1s ease-in-out;
   cursor: pointer;
@@ -364,7 +382,6 @@ body {
   list-style: circle;
   list-style-position: inside;
   padding: 7px;
-  margin: 2px 0px;
   padding-left: 10px;
   transition: 0.1s ease-in-out;
   cursor: pointer;

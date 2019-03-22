@@ -582,11 +582,13 @@
 				var object = Bonesloader.parse(result);
 				object.traverse( function ( child ) {
 					child.name = file.name;
-					objects.push(child);
+					if (child.isMesh){
+						objects.push(child);
+						groupBones.add(child);
+						addBoneToTree(file.name,child.uuid);
+					} 
 					//if ( child.isMesh ) child.material.map = texture;
 				} );
-				groupBones.add(object);
-				addBoneToTree(file.name,object.uuid);
 			}
 			reader.readAsText(file);
 			closeEditor.click();
@@ -626,10 +628,11 @@
 				onBoneSelect(intersects[0].object);
 				state.selectedBone = [];
 				state.selectedBone.push(intersects[0].object);
-			}else{
-				controlObject.detach(state.selectedBone[0]);
-				state.selectedBone = [];
 			}
+			// else{
+			// 	controlObject.detach(state.selectedBone[0]);
+			// 	state.selectedBone = [];
+			// }
 		}
 
 		// Add and delete gui folder for controling bones (size, scale, position, color ...)
@@ -647,11 +650,12 @@
 			var prams = {
 				color: bone.material.color.getStyle(),
 				delete:function(){
-					controlObject.detach(bone.children[1]);
-					groupBones.remove(groupBones.getObjectByName(bone.name))
+					controlObject.detach(bone);
+					bone.parent.remove(groupBones.getObjectByProperty("uuid",bone.uuid))
 					var newObjects = objects.filter(child => child.name !== bone.name)
 					objects = [...newObjects];
 					gui.removeFolder(gui.__folders[bone.name]);
+					document.getElementById(bone.uuid).remove();
 				}
 			}
 			var boneFolder = gui.addFolder(bone.name);
@@ -692,8 +696,28 @@
 
 		// on add group event
 		newGroup.addEventListener("click",addGroupToGroupTree,false);
+		boneList.addEventListener("drop",function(e){
+			e.preventDefault();
+			var data = e.dataTransfer.getData("text");
+			this.appendChild(document.getElementById(data));
+
+			groupBones.add(groupBones.getObjectByProperty('uuid',document.getElementById(data).id));
+		});
+		boneList.addEventListener("dragover",function (e){ 
+			e.preventDefault(); 
+		});
+		boneList.addEventListener("dragend",function (e){ 
+			e.preventDefault(); 
+			var group = document.getElementsByClassName("group");
+			[].forEach.call(group, el => {
+				el.classList.replace('drop-enabled','drop-disabled');
+			});
+		});
+
 		function addGroupToGroupTree(){
-			var id = randomString(8);
+			var group = new THREE.Group();
+			groupBones.add(group);
+			var id = group.uuid;
 			var ul = document.createElement('ul');
 			ul.setAttribute("id",id);
 			ul.setAttribute("class","drop-disabled group");
@@ -712,11 +736,14 @@
 				e.preventDefault();
 				var data = e.dataTransfer.getData("text");
 				this.insertAdjacentElement("beforeend",document.getElementById(data));
+
+				groupBones.getObjectByProperty('uuid',this.id).add(groupBones.getObjectByProperty('uuid',document.getElementById(data).id));
 			})
 
 			var span = document.createElement('span');
 			span.className = "fa fa-trash-alt";
 			span.addEventListener("click",function(){
+				groupBones.remove(groupBones.getObjectByProperty('uuid',this.parentElement.id));
 				this.parentElement.remove();
 			},false);
 
@@ -725,18 +752,48 @@
 			inputGroupName.name = "group_name";
 			inputGroupName.placeholder = "Group Name ...";
 
+			inputGroupName.addEventListener("change",function(e){
+				groupBones.getObjectByProperty('uuid',this.parentElement.id).name = e.target.value;
+			},false);
+
+
+			var label = document.createElement('label');
+			var inputMoveAsGroupe = document.createElement('input');
+			inputMoveAsGroupe.type = "checkbox";
+			inputMoveAsGroupe.name = "move_group";
+			inputMoveAsGroupe.style.cursor = "pointer";
+			inputMoveAsGroupe.addEventListener("change",function(){
+				if(this.checked){
+					var group = groupBones.getObjectByProperty('uuid',this.parentNode.parentNode.id) ;
+					var box = new THREE.BoxHelper(group, 0xff8900);
+					box.setFromObject(group);
+					box.name = this.parentNode.parentNode.id;
+					box.update();
+					groupBones.getObjectByProperty('uuid',this.parentNode.parentNode.id).add(box);
+
+					controlObject.attach(groupBones.getObjectByProperty(this.parentNode.parentNode.id))
+				}
+				if(!this.checked){
+					controlObject.detach(groupBones.getObjectByProperty(this.parentNode.parentNode.id))
+					groupBones.getObjectByProperty('uuid',this.parentNode.parentNode.id).remove(groupBones.getObjectByName(this.parentNode.parentNode.id))
+				}
+			});
+
+			label.textContent = "Move as group";
+			label.appendChild(inputMoveAsGroupe)
+
+			ul.appendChild(label);
 			ul.appendChild(span);
 			ul.appendChild(inputGroupName);
 			groupTree.appendChild(ul);
 		}
 
+
 		function addBoneToTree(boneName,uuid){
-			var id = randomString(8);
 			var li = document.createElement('li');
 			li.textContent = boneName;
-			li.id = id;
+			li.id = uuid;
 			li.className = "bone deselected";
-			li.setAttribute("data-uuid",uuid);
 			li.setAttribute("draggable","true");
 			li.addEventListener("mouseover",function (e){
 				controls.enabled = false; controlObject.enabled = false;
@@ -750,25 +807,22 @@
 			});
 			
 			/* Select Object from tree & Edit*/
-			li.addEventListener("click",function onBoneSlectFromTree(e){
-				var boneSelected = groupBones.children.filter(bone => bone.uuid == e.target.dataset.uuid);
-				var bone = document.getElementsByClassName("bone");
-				[].forEach.call(bone, el => {
+			li.addEventListener("click",function (e){
+				var boneSelected = groupBones.getObjectByProperty("uuid",e.target.id);
+				var bones = document.getElementsByClassName("bone");
+				[].forEach.call(bones, el => {
 					el.classList.replace('selected','deselected');
-				});
+				});  
 				this.classList.replace("deselected","selected");
-				// console.log(boneSelected);
-				// var box = new THREE.BoxHelper(boneSelected[0].children[0], 0xffffff);
-				// boneSelected[0].add(box);
-				controlObject.attach(boneSelected[0].children[0]);
-				onBoneSelect(boneSelected[0].children[0]);
+
+				controlObject.attach(boneSelected);
+				onBoneSelect(boneSelected);
 				state.selectedBone = [];
-				state.selectedBone.push(boneSelected[0].children[0]);
+				state.selectedBone.push(boneSelected);
 			},false);
 
 			boneList.appendChild(li);
 		}
-
 
 //////////////////////////////////////////////////////////////////////////////////////////
 //________________________________________________________________________________________
