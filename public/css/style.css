@@ -3,6 +3,10 @@ body {
   font-family: sans-serif;
 }
 
+textarea:focus, input:focus{
+  outline: none;
+}
+
 .sidebar{
   position: absolute;
   top: 10px;
@@ -305,7 +309,6 @@ body {
 }
 
 .bones_tree .groupTree>ul{
-  border-top: 3px solid #ff8900;
   background-color: #292929;
   padding-left: 0;
   margin: 10px 0px;
@@ -334,31 +337,28 @@ body {
 }
 
 .bones_tree .groupTree>ul>span{
-  position: absolute;
+  position: relative;
   z-index: 1;
   float: right;
-  right: 35px;
-  margin-top: 25px;
+  right: 15px;
+  margin-top: 15px;
+  margin-left: 15px;
   color: #d3d3d3;
   border-radius: 8px;
   cursor: pointer;
   transition: 0.1s ease-in-out;
-  opacity: 0;
-}
-
-.bones_tree .groupTree>ul:hover span{
-  opacity: 1;
 }
 
 .bones_tree .groupTree>ul>input{
   display: block;
   border: 0;
-  background: #171717;
-  width: auto;
+  border-left: 3px solid #3279b3;
+  background: transparent;
+  width: 110px;
   color: #fff;
   padding: 6px 10px;
-  margin: 0px auto 10px;
-  border-radius: 2px;
+  margin: 10px 8px 10px;
+  cursor: pointer;
 }
 
 .bones_tree .groupTree>ul>li{
@@ -403,6 +403,14 @@ body {
 .deselected{
   background-color: none;
 }
+
+.group-selected{
+  border: 3px solid #ff8900;
+}
+.group-selected{
+  border-top: 3px solid #ff8900;
+}
+
 /* new group button style*/
 
 input[name='new_group']{

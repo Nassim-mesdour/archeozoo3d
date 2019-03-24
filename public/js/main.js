@@ -2,9 +2,9 @@
 		var texture, texture3;
 		texture = new THREE.TextureLoader().load("../images/hall_ground.jpg"); 
 		texture3 = new THREE.TextureLoader().load("../images/hall_ground.png");
-		var camera, controls, controlObject, scene, renderer, canvas, canvas_container, gridHelper,
-		gui, customContainer, boxHelper, requestAnimation, requestAnimation2;
-		objects=[], boxToUpdate=[],
+		var camera, controls, controlObject, scene, renderer, canvas, canvas_container, gridHelper, boxHelper,
+		gui, customContainer, requestAnimation, requestAnimation2;
+		objects=[], boxToUpdate = "",
 		state = {
 			animation : {
 				play : false,
@@ -194,7 +194,12 @@
 			// dragControls.addEventListener( 'dragend', function () {
 			// 	controls.enabled = true;
 			// },false);
-	
+			
+			//box helper
+			boxHelper = new THREE.BoxHelper(groupBones, 0xff8900);
+			boxHelper.setFromObject(groupBones);
+			boxHelper.matrixAutoUpdate = true;
+			scene.add(boxHelper);
 			
 			//Objects Controls 
 			gui = new dat.GUI({ autoPlace: false } );
@@ -213,6 +218,7 @@
 			requestAnimation = requestAnimationFrame( animate );
 			state.animation.play ? (gridHelper.rotation.y += 0.005) : 
 									(gridHelper.rotation.y = gridHelper.rotation.y);
+			boxHelper.update();
 			controls.update(); // only required if controls.enableDamping = true, or if controls.autoRotate = true
 			renderer.render( scene, camera );
 		}
@@ -606,12 +612,14 @@
 			if ( intersects.length > 0 ) {
 				controlObject.attach(intersects[ 0 ].object);
 				onBoneSelect(intersects[0].object);
+				boxHelper.setFromObject(intersects[0].object);
 				state.selectedBone = [];
 				state.selectedBone.push(intersects[0].object);
-			}else{
-				controlObject.detach(state.selectedBone[0]);
-				state.selectedBone = [];
 			}
+			// else{
+			// 	controlObject.detach(state.selectedBone[0]);
+			// 	state.selectedBone = [];
+			// }
 		}
 
 		// attach bone to Objectcontrol (Option for mouse handeler)
@@ -626,6 +634,7 @@
 			if ( intersects.length > 0 ) {
 				controlObject.attach(intersects[ 0 ].object);
 				onBoneSelect(intersects[0].object);
+				boxHelper.setFromObject(intersects[0].object);
 				state.selectedBone = [];
 				state.selectedBone.push(intersects[0].object);
 			}
@@ -720,9 +729,10 @@
 			var id = group.uuid;
 			var ul = document.createElement('ul');
 			ul.setAttribute("id",id);
-			ul.setAttribute("class","drop-disabled group");
+			ul.setAttribute("class","drop-disabled group group-deselected");
 			ul.addEventListener("dragenter",function (e){ 
 				e.preventDefault(); 
+				this.children.group_name.readOnly = false;
 				this.classList.replace('drop-disabled','drop-enabled');
 			});
 			ul.addEventListener("dragend",function (e){ 
@@ -734,6 +744,7 @@
 			});
 			ul.addEventListener("drop",function drop(e) {
 				e.preventDefault();
+				this.children.group_name.readOnly = true;
 				var data = e.dataTransfer.getData("text");
 				this.insertAdjacentElement("beforeend",document.getElementById(data));
 
@@ -747,14 +758,43 @@
 				this.parentElement.remove();
 			},false);
 
+			var span1 = document.createElement('span');
+			span1.className = "fa fa-edit";
+			span1.addEventListener("click",function(){
+				var group_name = this.nextSibling;
+				group_name.readOnly = false;
+				group_name.focus();
+			},false);
+
 			var inputGroupName = document.createElement('input');
 			inputGroupName.type = "text";
+			inputGroupName.className = "selected"
+			inputGroupName.readOnly = true;
 			inputGroupName.name = "group_name";
 			inputGroupName.placeholder = "Group Name ...";
 
 			inputGroupName.addEventListener("change",function(e){
 				groupBones.getObjectByProperty('uuid',this.parentElement.id).name = e.target.value;
 			},false);
+			inputGroupName.addEventListener("blur",function(){
+				this.readOnly = true;
+			})
+			inputGroupName.addEventListener("click",function(e){
+				var group = document.getElementsByClassName("group");
+				[].forEach.call(group, el => {
+					el.classList.replace('group-selected','group-deselected');
+				});
+
+				var bones = document.getElementsByClassName("bone");
+				[].forEach.call(bones, el => {
+					el.classList.replace('selected','deselected');
+				});
+				var group = groupBones.getObjectByProperty('uuid',this.parentElement.id);   
+
+				this.parentElement.classList.replace('group-deselected','group-selected');
+				boxHelper.setFromObject(group);
+				controlObject.attach(group);
+			})
 
 
 			var label = document.createElement('label');
@@ -766,24 +806,30 @@
 				if(this.checked){
 					var group = groupBones.getObjectByProperty('uuid',this.parentNode.parentNode.id) ;
 					var box = new THREE.BoxHelper(group, 0xff8900);
+					boxToUpdate = box.id;
 					box.setFromObject(group);
 					box.name = this.parentNode.parentNode.id;
-					box.update();
-					groupBones.getObjectByProperty('uuid',this.parentNode.parentNode.id).add(box);
+					box.matrixAutoUpdate = true;
+					//box.update();
+					//groupBones.getObjectByProperty('uuid',this.parentNode.parentNode.id)
+					scene.add(box);
 
 					controlObject.attach(groupBones.getObjectByProperty(this.parentNode.parentNode.id))
 				}
 				if(!this.checked){
+					boxToUpdate = "";
 					controlObject.detach(groupBones.getObjectByProperty(this.parentNode.parentNode.id))
-					groupBones.getObjectByProperty('uuid',this.parentNode.parentNode.id).remove(groupBones.getObjectByName(this.parentNode.parentNode.id))
+					//groupBones.getObjectByProperty('uuid',this.parentNode.parentNode.id)
+					scene.remove(scene.getObjectByName(this.parentNode.parentNode.id));
 				}
 			});
 
 			label.textContent = "Move as group";
 			label.appendChild(inputMoveAsGroupe)
 
-			ul.appendChild(label);
+			//ul.appendChild(label);
 			ul.appendChild(span);
+			ul.appendChild(span1);
 			ul.appendChild(inputGroupName);
 			groupTree.appendChild(ul);
 		}
@@ -809,14 +855,21 @@
 			/* Select Object from tree & Edit*/
 			li.addEventListener("click",function (e){
 				var boneSelected = groupBones.getObjectByProperty("uuid",e.target.id);
+
+				var group = document.getElementsByClassName("group");
+				[].forEach.call(group, el => {
+					el.classList.replace('group-selected','group-deselected');
+				});
+
 				var bones = document.getElementsByClassName("bone");
 				[].forEach.call(bones, el => {
 					el.classList.replace('selected','deselected');
-				});  
+				});    
 				this.classList.replace("deselected","selected");
 
 				controlObject.attach(boneSelected);
 				onBoneSelect(boneSelected);
+				boxHelper.setFromObject(boneSelected);
 				state.selectedBone = [];
 				state.selectedBone.push(boneSelected);
 			},false);
