@@ -340,10 +340,9 @@ textarea:focus, input:focus{
   position: relative;
   z-index: 1;
   float: right;
-  right: 15px;
+  right: 10px;
   margin-top: 15px;
   margin-left: 15px;
-  color: #d3d3d3;
   border-radius: 8px;
   cursor: pointer;
   transition: 0.1s ease-in-out;
@@ -409,6 +408,14 @@ textarea:focus, input:focus{
 }
 .group-selected{
   border-top: 3px solid #ff8900;
+}
+
+.locked{
+  color: #aa2727;
+}
+
+.unlocked{
+  color: #1ed36f; 
 }
 
 /* new group button style*/

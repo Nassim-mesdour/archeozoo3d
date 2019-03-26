@@ -3,8 +3,8 @@
 		texture = new THREE.TextureLoader().load("../images/hall_ground.jpg"); 
 		texture3 = new THREE.TextureLoader().load("../images/hall_ground.png");
 		var camera, controls, controlObject, scene, renderer, canvas, canvas_container, gridHelper, boxHelper,
-		gui, customContainer, requestAnimation, requestAnimation2;
-		objects=[], boxToUpdate = "",
+		gui, customContainer, requestAnimation;
+		objects=[], objectsLocked=[],
 		state = {
 			animation : {
 				play : false,
@@ -766,6 +766,34 @@
 				group_name.focus();
 			},false);
 
+			var span2 = document.createElement('span');
+			span2.className = "fa fa-lock-open unlocked";
+			span2.id = "locker";
+			span2.addEventListener("click",function(){
+				if(span2.className.split(' ')[1] === 'fa-lock-open' ){
+					this.classList.replace('fa-lock-open','fa-lock');
+					this.classList.replace('unlocked','locked');
+					objects = objects.filter(obj =>{
+						if(groupBones.getObjectByProperty('uuid',obj.uuid).parent.uuid == this.parentElement.id){
+							objectsLocked.push(obj);
+							controlObject.detach(obj);
+						}else{
+							return obj;
+						}
+					})
+				}else{
+					this.classList.replace('fa-lock','fa-lock-open');
+					this.classList.replace('locked','unlocked');
+					objectsLocked = objectsLocked.filter(obj =>{
+						if(groupBones.getObjectByProperty('uuid',obj.uuid).parent.uuid == this.parentElement.id){
+							objects.push(obj)
+						}else{
+							return obj;
+						}
+					})
+				}
+			},false);
+
 			var inputGroupName = document.createElement('input');
 			inputGroupName.type = "text";
 			inputGroupName.className = "selected"
@@ -795,39 +823,7 @@
 				boxHelper.setFromObject(group);
 				controlObject.attach(group);
 			})
-
-
-			var label = document.createElement('label');
-			var inputMoveAsGroupe = document.createElement('input');
-			inputMoveAsGroupe.type = "checkbox";
-			inputMoveAsGroupe.name = "move_group";
-			inputMoveAsGroupe.style.cursor = "pointer";
-			inputMoveAsGroupe.addEventListener("change",function(){
-				if(this.checked){
-					var group = groupBones.getObjectByProperty('uuid',this.parentNode.parentNode.id) ;
-					var box = new THREE.BoxHelper(group, 0xff8900);
-					boxToUpdate = box.id;
-					box.setFromObject(group);
-					box.name = this.parentNode.parentNode.id;
-					box.matrixAutoUpdate = true;
-					//box.update();
-					//groupBones.getObjectByProperty('uuid',this.parentNode.parentNode.id)
-					scene.add(box);
-
-					controlObject.attach(groupBones.getObjectByProperty(this.parentNode.parentNode.id))
-				}
-				if(!this.checked){
-					boxToUpdate = "";
-					controlObject.detach(groupBones.getObjectByProperty(this.parentNode.parentNode.id))
-					//groupBones.getObjectByProperty('uuid',this.parentNode.parentNode.id)
-					scene.remove(scene.getObjectByName(this.parentNode.parentNode.id));
-				}
-			});
-
-			label.textContent = "Move as group";
-			label.appendChild(inputMoveAsGroupe)
-
-			//ul.appendChild(label);
+			ul.appendChild(span2);
 			ul.appendChild(span);
 			ul.appendChild(span1);
 			ul.appendChild(inputGroupName);
