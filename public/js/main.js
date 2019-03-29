@@ -9,8 +9,7 @@
 			animation : {
 				play : false,
 			},
-			selectedBone : [],
-			selectedBones : []
+			selectedBone : []
 		};
 		var holeGeo, holePlane,
 		holeBaseGeo, holeBasePlane,
@@ -202,9 +201,16 @@
 			scene.add(boxHelper);
 			
 			//Objects Controls 
-			gui = new dat.GUI({ autoPlace: false } );
+			gui = new dat.GUI({ autoPlace: false });
+			var boneFolder = gui.addFolder();
+			boneFolder.name = "Control mode";
+			boneFolder.open();
+			boneFolder.add(controlObject, 'mode', { Translate: "translate", Rotate: "rotate" } ).onChange(function(value){
+				controlObject.setMode(value);
+			})
 			customContainer = document.getElementById('gui-container');
 			customContainer.appendChild(gui.domElement);
+
 
 			//resize canvas on windowsResize
 			window.addEventListener( 'resize', onWindowResize, false );
@@ -611,7 +617,7 @@
 			var intersects = raycaster.intersectObjects( objects );
 			if ( intersects.length > 0 ) {
 				controlObject.attach(intersects[ 0 ].object);
-				onBoneSelect(intersects[0].object);
+				boneEditor(intersects[0].object);
 				boxHelper.setFromObject(intersects[0].object);
 				state.selectedBone = [];
 				state.selectedBone.push(intersects[0].object);
@@ -633,7 +639,7 @@
 			var intersects = raycaster.intersectObjects( objects );
 			if ( intersects.length > 0 ) {
 				controlObject.attach(intersects[ 0 ].object);
-				onBoneSelect(intersects[0].object);
+				boneEditor(intersects[0].object);
 				boxHelper.setFromObject(intersects[0].object);
 				state.selectedBone = [];
 				state.selectedBone.push(intersects[0].object);
@@ -645,6 +651,7 @@
 		}
 
 		// Add and delete gui folder for controling bones (size, scale, position, color ...)
+		// To DDELLETEE !!!!!!!!!
 		function onBoneSelect (bone){
 			if(gui.__folders[guiFoldetState.objectSlected] !== undefined & gui.__folders[guiFoldetState.objectSlected] === bone.name){
 				return;
@@ -654,8 +661,14 @@
 			}else{
 				boneFolderEditor(bone);
 			}
-		}
-		function boneFolderEditor (bone){
+		} 
+		
+		function boneEditor (bone){
+			var l =  gui.__controllers.length;
+			var i=0;
+			for(i;i <l;i++){
+				gui.__controllers[0].remove();
+			} 
 			var prams = {
 				color: bone.material.color.getStyle(),
 				delete:function(){
@@ -667,28 +680,26 @@
 					document.getElementById(bone.uuid).remove();
 				}
 			}
-			var boneFolder = gui.addFolder(bone.name);
-			    boneFolder.open();
-			boneFolder.add(bone.scale, 'x', 0.1, 5).name('Scale').onChange(function(value){
+			
+			// var boneFolder = gui.addFolder(bone.name);
+			//     boneFolder.open();
+			gui.add(bone.scale, 'x', 0.1, 5).name('Scale').onChange(function(value){
 				bone.scale.y = value;
 				bone.scale.z = value;
 			});
-			boneFolder.addColor(prams,'color').onChange(function(){
+			gui.addColor(prams,'color').onChange(function(){
 				var colorObj = new THREE.Color( prams.color );
 				// var hex = colorObj.getHexString();
 				var css = colorObj.getStyle();
 				bone.material.color.set(css);
-			})
-			boneFolder.add(controlObject, 'mode', { Translate: "translate", Rotate: "rotate" } ).onChange(function(value){
-				controlObject.setMode(value);
-			})
-			boneFolder.add(bone.position, 'x', -600, 600);
-			boneFolder.add(bone.position, 'y', -600, 600);
-			boneFolder.add(bone.position, 'z', -600, 600);
-			boneFolder.add(prams, 'delete').onClick;
-			guiFoldetState = {
-				objectSlected : bone.name 
-			} 
+			});
+			gui.add(bone.position, 'x', -600, 600);
+			gui.add(bone.position, 'y', -600, 600);
+			gui.add(bone.position, 'z', -600, 600);
+			gui.add(prams, 'delete').onClick;
+			// guiFoldetState = {
+			// 	objectSlected : bone.name 
+			// } 
 		}
 		
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -742,13 +753,16 @@
 					el.classList.replace('drop-enabled','drop-disabled');
 				});
 			});
-			ul.addEventListener("drop",function drop(e) {
+			ul.addEventListener("drop",function (e) {
 				e.preventDefault();
 				this.children.group_name.readOnly = true;
 				var data = e.dataTransfer.getData("text");
 				this.insertAdjacentElement("beforeend",document.getElementById(data));
 
 				groupBones.getObjectByProperty('uuid',this.id).add(groupBones.getObjectByProperty('uuid',document.getElementById(data).id));
+			})
+			ul.addEventListener('click',function(){
+
 			})
 
 			var span = document.createElement('span');
@@ -769,6 +783,7 @@
 			var span2 = document.createElement('span');
 			span2.className = "fa fa-lock-open unlocked";
 			span2.id = "locker";
+			span2.style.pointerEvents = 'all';
 			span2.addEventListener("click",function(){
 				if(span2.className.split(' ')[1] === 'fa-lock-open' ){
 					this.classList.replace('fa-lock-open','fa-lock');
@@ -776,7 +791,12 @@
 					objects = objects.filter(obj =>{
 						if(groupBones.getObjectByProperty('uuid',obj.uuid).parent.uuid == this.parentElement.id){
 							objectsLocked.push(obj);
-							controlObject.detach(obj);
+							boxHelper.setFromObject(groupBones.getObjectByProperty('uuid',obj.uuid).parent);
+							controlObject.attach(groupBones.getObjectByProperty('uuid',obj.uuid).parent);
+							document.getElementById(obj.uuid).draggable = false;
+							document.getElementById(obj.uuid).style.pointerEvents = 'none';
+							document.getElementById(obj.uuid).style.opacity = 0.3;
+							document.getElementById(obj.uuid).classList.replace("selected","deselected");
 						}else{
 							return obj;
 						}
@@ -787,6 +807,9 @@
 					objectsLocked = objectsLocked.filter(obj =>{
 						if(groupBones.getObjectByProperty('uuid',obj.uuid).parent.uuid == this.parentElement.id){
 							objects.push(obj)
+							document.getElementById(obj.uuid).draggable = true;
+							document.getElementById(obj.uuid).style.pointerEvents = 'all';
+							document.getElementById(obj.uuid).style.opacity = 1;
 						}else{
 							return obj;
 						}
@@ -817,6 +840,7 @@
 				[].forEach.call(bones, el => {
 					el.classList.replace('selected','deselected');
 				});
+
 				var group = groupBones.getObjectByProperty('uuid',this.parentElement.id);   
 
 				this.parentElement.classList.replace('group-deselected','group-selected');
@@ -864,7 +888,7 @@
 				this.classList.replace("deselected","selected");
 
 				controlObject.attach(boneSelected);
-				onBoneSelect(boneSelected);
+				boneEditor(boneSelected);
 				boxHelper.setFromObject(boneSelected);
 				state.selectedBone = [];
 				state.selectedBone.push(boneSelected);

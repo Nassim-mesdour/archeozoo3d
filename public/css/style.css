@@ -260,7 +260,7 @@ textarea:focus, input:focus{
   z-index: 10;
   top: 50px;
   right: 0px;
-  margin-bottom: 30px;
+  margin-top: 20px;
 }
 
 /* Tree Bones */
@@ -311,6 +311,7 @@ textarea:focus, input:focus{
 .bones_tree .groupTree>ul{
   background-color: #292929;
   padding-left: 0;
+  border-radius: 3px;
   margin: 10px 0px;
   padding: 10px 0;
   font-size: 15px;
@@ -374,6 +375,7 @@ textarea:focus, input:focus{
   margin-bottom: 10px;
   height: 100px;
   border: 1px solid #3279b3;
+  border-radius: 3px;
   overflow-x: hidden;
 }
 
@@ -423,7 +425,6 @@ textarea:focus, input:focus{
 input[name='new_group']{
   position: relative;
   right: -67px;
-  margin: 10px 0 0 0;
   border-radius: 3px;
   font-weight: bold;
   font-size: 13px;
