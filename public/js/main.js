@@ -16,7 +16,6 @@
 		groundGeo, groundPlane;
 		var groupHole = new THREE.Group(); groupHole.name = 'Hole';
 		var groupBones = new THREE.Group(); groupBones.name = 'Bones';
-		var groupBonesSelected = new THREE.Group(); groupBones.name = 'Bones';
 		var groupGridLevel = new THREE.Group(); groupGridLevel.name = 'gridlavel';
 
 		//canvas domHtmlDocument
@@ -196,6 +195,7 @@
 			
 			//box helper
 			boxHelper = new THREE.BoxHelper(groupBones, 0xff8900);
+			boxHelper.name = "boxHelper";
 			boxHelper.setFromObject(groupBones);
 			boxHelper.matrixAutoUpdate = true;
 			scene.add(boxHelper);
@@ -669,34 +669,39 @@
 			for(i;i <l;i++){
 				gui.__controllers[0].remove();
 			} 
+
+			if(gui.__folders['Bone Control'] !== undefined){
+				gui.removeFolder(gui.__folders['Bone Control']);
+			} 
+			var boneFolder = gui.addFolder("Bone Control");
+			boneFolder.open();
+
 			var prams = {
 				color: bone.material.color.getStyle(),
 				delete:function(){
 					controlObject.detach(bone);
+					document.getElementById(bone.uuid).remove();
 					bone.parent.remove(groupBones.getObjectByProperty("uuid",bone.uuid))
 					var newObjects = objects.filter(child => child.name !== bone.name)
 					objects = [...newObjects];
-					gui.removeFolder(gui.__folders[bone.name]);
-					document.getElementById(bone.uuid).remove();
 				}
 			}
 			
-			// var boneFolder = gui.addFolder(bone.name);
-			//     boneFolder.open();
-			gui.add(bone.scale, 'x', 0.1, 5).name('Scale').onChange(function(value){
+
+			boneFolder.add(bone.scale, 'x', 0.1, 5).name('Scale').onChange(function(value){
 				bone.scale.y = value;
 				bone.scale.z = value;
 			});
-			gui.addColor(prams,'color').onChange(function(){
+			boneFolder.addColor(prams,'color').onChange(function(){
 				var colorObj = new THREE.Color( prams.color );
 				// var hex = colorObj.getHexString();
 				var css = colorObj.getStyle();
 				bone.material.color.set(css);
 			});
-			gui.add(bone.position, 'x', -600, 600);
-			gui.add(bone.position, 'y', -600, 600);
-			gui.add(bone.position, 'z', -600, 600);
-			gui.add(prams, 'delete').onClick;
+			boneFolder.add(bone.position, 'x', -600, 600);
+			boneFolder.add(bone.position, 'y', -600, 600);
+			boneFolder.add(bone.position, 'z', -600, 600);
+			boneFolder.add(prams, 'delete').onClick;
 			// guiFoldetState = {
 			// 	objectSlected : bone.name 
 			// } 
@@ -768,6 +773,15 @@
 			var span = document.createElement('span');
 			span.className = "fa fa-trash-alt";
 			span.addEventListener("click",function(){
+				boxHelper.setFromObject(groupBones);
+				controlObject.detach();
+				var newObjects = objects.filter(
+					function(child) {
+					  return this.indexOf(child) < 0;
+					},
+					groupBones.getObjectByProperty('uuid',this.parentElement.id).children
+				);
+				objects = [...newObjects];
 				groupBones.remove(groupBones.getObjectByProperty('uuid',this.parentElement.id));
 				this.parentElement.remove();
 			},false);
