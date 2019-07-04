@@ -2,28 +2,28 @@
 		var texture, texture3;
 		texture = new THREE.TextureLoader().load("./public/assets/images/hall_ground.jpg"); 
 		texture3 = new THREE.TextureLoader().load("./public/assets/images/hall_ground.png");
-		var camera, controls, controlObject, scene, renderer, canvas, canvas_container, gridHelper,
-		gui, customContainer, 
-		objects=[];
+		var camera, controls, controlObject, scene, renderer, canvas, canvas_container, gridHelper, boxHelper,
+		gui, customContainer, requestAnimation;
+		objects=[], objectsLocked=[],
 		state = {
 			animation : {
 				play : false,
 			},
-			selectedBone : [],
-			selectedBones : []
+			selectedBone : []
 		};
 		var holeGeo, holePlane,
 		holeBaseGeo, holeBasePlane,
 		groundGeo, groundPlane;
 		var groupHole = new THREE.Group(); groupHole.name = 'Hole';
 		var groupBones = new THREE.Group(); groupBones.name = 'Bones';
-		var groupBonesSelected = new THREE.Group(); groupBones.name = 'Bones';
 		var groupGridLevel = new THREE.Group(); groupGridLevel.name = 'gridlavel';
 
 		//canvas domHtmlDocument
 		canvas = document.getElementById('renderer');
 		canvas_container = document.getElementsByClassName('renderer_container');
 		//var dragControls, // à supprimer
+
+		
 //////////////////////////////////////////////////////////////////////////////////////////
 //________________________________________________________________________________________
 /*
@@ -77,6 +77,7 @@
 			for(i = object.children[1].children.length - 1 ; i>=0 ;i--){
 				groupBones.add(object.children[1].children[i]);
 			}
+			groupGridLevel.copy(object.children[2]);
 			closeEditor.click();
 			loadingEnd();
 			progress.setAttribute('style','width:0%;');
@@ -114,11 +115,11 @@
 		animateDiapo.addEventListener('click',function(){
 			state.animation.play = !state.animation.play;
 			state.animation.play ? (
-				this.children['0'].setAttribute('class','fa fa-pause-circle'),
+				this.children['0'].setAttribute('class','icon-stop2'),
 				this.style.background = "#2e76b5",
 				this.style.color = "#fff"
 			):(
-				this.children['0'].setAttribute('class','fa fa-play-circle'),
+				this.children['0'].setAttribute('class','icon-play3'),
 				this.style.background = "#fff",
 				this.style.color = "#2e76b5" 
 			);
@@ -134,8 +135,11 @@
 			//renderer
 			renderer = new THREE.WebGLRenderer({canvas:canvas,antialias: true,clearAlpha:0});
 			renderer.setPixelRatio( window.devicePixelRatio );
-			renderer.setSize( canvas_container[0].clientWidth, canvas_container[0].clientHeight );
-			camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 1, 4000 );
+			renderer.setSize( canvas_container[0].clientWidth , canvas_container[0].clientHeight);
+			
+			//camera
+
+			camera = new THREE.PerspectiveCamera( 60, canvas_container[0].clientWidth / canvas_container[0].clientHeight, 1, 4000 );
 			camera.position.set( 800, 800, 0 );
 			
 			// controls
@@ -146,7 +150,6 @@
 			controls.minDistance = 10;
 			controls.maxDistance = 3000;
 			controls.maxPolarAngle = Math.PI;
-
 			
 			//controls Object
 			controlObject = new THREE.TransformControls( camera, canvas );
@@ -191,24 +194,39 @@
 			// dragControls.addEventListener( 'dragend', function () {
 			// 	controls.enabled = true;
 			// },false);
-	
+			
+			//box helper
+			boxHelper = new THREE.BoxHelper(groupBones, 0xff8900);
+			boxHelper.name = "boxHelper";
+			boxHelper.setFromObject(groupBones);
+			boxHelper.matrixAutoUpdate = true;
+			scene.add(boxHelper);
 			
 			//Objects Controls 
-			gui = new dat.GUI({ autoPlace: false } );
+			gui = new dat.GUI({ autoPlace: false });
+			var boneFolder = gui.addFolder();
+			boneFolder.name = "Control mode";
+			boneFolder.open();
+			boneFolder.add(controlObject, 'mode', { Translate: "translate", Rotate: "rotate" } ).onChange(function(value){
+				controlObject.setMode(value);
+			})
 			customContainer = document.getElementById('gui-container');
 			customContainer.appendChild(gui.domElement);
+
 
 			//resize canvas on windowsResize
 			window.addEventListener( 'resize', onWindowResize, false );
 		}
 		function onWindowResize(){
-			camera.aspect = window.innerWidth / window.innerHeight;
+			camera.aspect = canvas_container[0].clientWidth / canvas_container[0].clientHeight;
 			camera.updateProjectionMatrix();
-			renderer.setSize( window.innerWidth, window.innerHeight );
+			renderer.setSize(canvas_container[0].clientWidth, canvas_container[0].clientHeight)
 		}
 		function animate(){
-			requestAnimationFrame( animate );
-			state.animation.play ? gridHelper.rotation.y += 0.005 : gridHelper.rotation.y = gridHelper.rotation.y;
+			requestAnimation = requestAnimationFrame( animate );
+			state.animation.play ? (gridHelper.rotation.y += 0.005) : 
+									(gridHelper.rotation.y = gridHelper.rotation.y);
+			boxHelper.update();
 			controls.update(); // only required if controls.enableDamping = true, or if controls.autoRotate = true
 			renderer.render( scene, camera );
 		}
@@ -337,7 +355,7 @@
 //__Holes Controls________________________________________________________________________
 //////////////////////////////////////////////////////////////////////////////////////////
 
-		var  imageHole=['geometry.png','cylinder.png','triangle.png'],
+		var  imageHole=['geometry.png','cylinder.png'],
 		sceneState = {
 			holeType : ""
 		}
@@ -352,6 +370,17 @@
 		/* choose hole type */
 		holeType = (e,item) => {
 			closeHoleSelector();
+			var prams = {
+				visible : false,
+				delete:function(){
+					var i = groupHole.children.length -1;
+					for(i ; i>=0 ; i--){
+						groupHole.remove(groupHole.children[i]);
+					}
+					gui.removeFolder(gui.__folders['hole']);
+					groupHole.name = ""; sceneState.holeType = "";
+				}
+			}
 			if(scene.getObjectByName(item) !== undefined & sceneState.holeType === item){
 				return;
 			}
@@ -375,6 +404,10 @@
 				hole.add(groupHole.scale, 'z', 1, 6).name('Height').onChange(function(e){
 					groupGridLevel.scale.z = e;
 				});
+				hole.add(groupHole, 'visible', [false, true]).onChange(function(value){
+					value == "true" ? groupHole.visible = true : groupHole.visible = false;
+				});
+				hole.add(prams, 'delete').onClick;
 			hole.open;
 			switch (item) {
 				case "geometry.png":
@@ -412,26 +445,7 @@
 					groundPlane.rotateX(Math.PI * -0.5);
 					groupHole.add(groundPlane);
 				break;
-				case "triangle.png":
-					holeBaseGeo = new THREE.CircleBufferGeometry( 200, 3 );
-					holeBaseGeo.rotateX(Math.PI * 0.5);
-					holeBaseGeo.translate(-50,0,0)
-					holeBasePlane = new THREE.Mesh(holeBaseGeo, new THREE.MeshPhongMaterial({map: texture3, opacity: 0.9, transparent: true, side: THREE.DoubleSide}) );
-					groupHole.add(holeBasePlane);
 
-					holeGeo = new THREE.CylinderBufferGeometry( 200, 200, 100, 3 ,0,true);
-					holeGeo.rotateY(Math.PI * -0.167);
-					holeGeo.translate(-50,50,0);
-					holePlane = new THREE.Mesh(holeGeo, new THREE.MeshPhongMaterial({map: texture3, opacity: 0.9, transparent: true, side: THREE.DoubleSide}) );
-					groupHole.add(holePlane);
-
-					// groundGeo = new THREE.RingBufferGeometry( 200, 400, 3 );
-					// groundGeo.translate(-50,0,100);
-					// groundGeo.rotateX(Math.PI * -0.5);
-					// groundPlane = new THREE.Mesh( groundGeo, new THREE.MeshPhongMaterial({map: texture, side: THREE.DoubleSide}) );
-					// groupHole.add( groundPlane );
-				break;
-			
 				default:
 					break;
 			}
@@ -451,7 +465,7 @@
 				type.setAttribute('class','type '+randomString());
 				type.addEventListener('click',(event) => holeType(event,item),false);
 				var img = document.createElement('img');
-				img.setAttribute('src','./public/assets/images/hole/'+item);
+				img.setAttribute('src','images/hole/'+item);
 
 				type.appendChild(img);
 				editorContain.appendChild(type);
@@ -536,10 +550,6 @@
 #
 #
 #
-#
-#
-#
-#
 */
 //__hole_level____________________________________________________________________________
 //////////////////////////////////////////////////////////////////////////////////////////	
@@ -551,9 +561,8 @@
 				closeEditor.click();
 				return;
 			}
-			gridHelperLevel = new THREE.GridHelper(200,40);
+			gridHelperLevel = new THREE.GridHelper(200,40,0xffffff,Math.random() * 0xffffff);
 			holeSize = groupHole.scale;
-			gridHelperLevel.scale.set(holeSize.x,holeSize.y,holeSize.z);
 			gridHelperLevel.position.set(0,value[0].valueAsNumber,0)
 			groupGridLevel.add(gridHelperLevel);
 			closeEditor.click();
@@ -566,17 +575,16 @@
 #
 #
 #
-#
-#
-#
-#
 */
 //__Bones_Controls________________________________________________________________________
 //////////////////////////////////////////////////////////////////////////////////////////
-		var objectSatate = {
-			objectSlected : undefined
+		var guiFoldetState = { // memorize gui folders
+			objectSlected : undefined,
+			open : true
 		}
 		var BonesSelect = document.getElementById('Bones');
+		var boneList =  document.getElementById('bonesList');
+		var groupTree = document.getElementById('groupTree');
 
 		/*Loading Bones*/
 		BonesSelect.addEventListener('change',function(){
@@ -588,76 +596,100 @@
 				var object = Bonesloader.parse(result);
 				object.traverse( function ( child ) {
 					child.name = file.name;
-					objects.push(child);
-					
+					if (child.isMesh){
+						objects.push(child);
+						groupBones.add(child);
+						addBoneToTree(file.name,child.uuid);
+					} 
 					//if ( child.isMesh ) child.material.map = texture;
 				} );
-				groupBones.add( object );
 			}
 			reader.readAsText(file);
 			closeEditor.click();
 		},false);
-
-		/*Select & Edit Object*/
+		
+		// attach bone to Objectcontrol (Option for touchScreen handeler)
 		canvas.addEventListener('touchstart', onDocumentTouchStart);
-		canvas.addEventListener('click', onDocumentMouseDown);
 		function onDocumentTouchStart(event) {    
-			var mouse3D = new THREE.Vector3( ( event.touches[0].clientX / window.innerWidth ) * 2 - 1,   
-									-( event.touches[0].clientY / window.innerHeight ) * 2 + 1,  
+			var mouse3D = new THREE.Vector3( ( event.touches[0].clientX / canvas_container[0].clientWidth ) * 2 - 1,   
+									-( event.touches[0].clientY / canvas_container[0].clientHeight ) * 2 + 1,  
 									0.5 );     
 			var raycaster =  new THREE.Raycaster();                                        
 			raycaster.setFromCamera( mouse3D, camera );
 			var intersects = raycaster.intersectObjects( objects );
 			if ( intersects.length > 0 ) {
-				//intersects[ 0 ].object.material.color.setHex( Math.random() * 0xffffff );
 				controlObject.attach(intersects[ 0 ].object);
-				onBoneSelect(intersects[0].object);
-				state.selectedBone.push(intersects[0].object);
-			}else{
-				controlObject.detach(state.selectedBone[0]);
+				boneEditor(intersects[0].object);
+				boxHelper.setFromObject(intersects[0].object);
 				state.selectedBone = [];
+				state.selectedBone.push(intersects[0].object);
 			}
+			// else{
+			// 	controlObject.detach(state.selectedBone[0]);
+			// 	state.selectedBone = [];
+			// }
 		}
 
+		// attach bone to Objectcontrol (Option for mouse handeler)
+		canvas.addEventListener('click', onDocumentMouseDown);
 		function onDocumentMouseDown (event){    
-			var mouse3D = new THREE.Vector3( ( event.clientX / window.innerWidth ) * 2 - 1,
-									-( event.clientY / window.innerHeight ) * 2 + 1,
+			var mouse3D = new THREE.Vector3( ( event.clientX / canvas_container[0].clientWidth ) * 2 - 1,
+									-( event.clientY / canvas_container[0].clientHeight ) * 2 + 1,
 									0.5 );
 			var raycaster =  new THREE.Raycaster();                                        
 			raycaster.setFromCamera( mouse3D, camera );
 			var intersects = raycaster.intersectObjects( objects );
 			if ( intersects.length > 0 ) {
-				if(event.altKey){
-					//console.log('selected')
-					state.selectedBones.push(intersects[ 0 ].object);
-				}
 				controlObject.attach(intersects[ 0 ].object);
-				onBoneSelect(intersects[0].object);
-				state.selectedBone.push(intersects[0].object);
-			}else{
-				controlObject.detach(state.selectedBone[0]);
+				boneEditor(intersects[0].object);
+				boxHelper.setFromObject(intersects[0].object);
 				state.selectedBone = [];
+				state.selectedBone.push(intersects[0].object);
 			}
+			// else{
+			// 	controlObject.detach(state.selectedBone[0]);
+			// 	state.selectedBone = [];
+			// }
 		}
 
+		// Add and delete gui folder for controling bones (size, scale, position, color ...)
+		// To DDELLETEE !!!!!!!!!
 		function onBoneSelect (bone){
-			if(gui.__folders[objectSatate.objectSlected] !== undefined & gui.__folders[objectSatate.objectSlected] === bone.name){
+			if(gui.__folders[guiFoldetState.objectSlected] !== undefined & gui.__folders[guiFoldetState.objectSlected] === bone.name){
 				return;
-			}else if(gui.__folders[objectSatate.objectSlected] !== undefined & gui.__folders[objectSatate.objectSlected] !== bone.name){
-				gui.removeFolder(gui.__folders[objectSatate.objectSlected]);
+			}else if(gui.__folders[guiFoldetState.objectSlected] !== undefined & gui.__folders[guiFoldetState.objectSlected] !== bone.name){
+				gui.removeFolder(gui.__folders[guiFoldetState.objectSlected]);
 				boneFolderEditor(bone);
 			}else{
 				boneFolderEditor(bone);
 			}
-		}
+		} 
+		
+		function boneEditor (bone){
+			var l =  gui.__controllers.length;
+			var i=0;
+			for(i;i <l;i++){
+				gui.__controllers[0].remove();
+			} 
 
-		// Bones editor
-		function boneFolderEditor (bone){
+			if(gui.__folders['Bone Control'] !== undefined){
+				gui.removeFolder(gui.__folders['Bone Control']);
+			} 
+			var boneFolder = gui.addFolder("Bone Control");
+			boneFolder.open();
+
 			var prams = {
-				color: bone.material.color.getStyle()
+				color: bone.material.color.getStyle(),
+				delete:function(){
+					controlObject.detach(bone);
+					document.getElementById(bone.uuid).remove();
+					bone.parent.remove(groupBones.getObjectByProperty("uuid",bone.uuid))
+					var newObjects = objects.filter(child => child.name !== bone.name)
+					objects = [...newObjects];
+				}
 			}
-			var boneFolder = gui.addFolder(bone.name);
-			    boneFolder.open();
+			
+
 			boneFolder.add(bone.scale, 'x', 0.1, 5).name('Scale').onChange(function(value){
 				bone.scale.y = value;
 				bone.scale.z = value;
@@ -667,13 +699,14 @@
 				// var hex = colorObj.getHexString();
 				var css = colorObj.getStyle();
 				bone.material.color.set(css);
-			})
-			boneFolder.add(controlObject, 'mode', { Translate: "translate", Rotate: "rotate" } ).onChange(function(value){
-				controlObject.setMode(value);
-			})
-			objectSatate = {
-				objectSlected : bone.name 
-			} 
+			});
+			boneFolder.add(bone.position, 'x', -600, 600);
+			boneFolder.add(bone.position, 'y', -600, 600);
+			boneFolder.add(bone.position, 'z', -600, 600);
+			boneFolder.add(prams, 'delete').onClick;
+			// guiFoldetState = {
+			// 	objectSlected : bone.name 
+			// } 
 		}
 		
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -683,36 +716,206 @@
 #
 #
 #
-#
-#
-#
-#
 */
-//___Bones_Selection______________________________________________________________________
+//___Bones_Tree___________________________________________________________________________
 //////////////////////////////////////////////////////////////////////////////////////////
+		var newGroup = document.getElementsByName("new_group")[0];
 
-		// canvas.addEventListener('click',function(event){
-		// 	console.log(event);
-		// 	switch ( event.keyCode ){
-		// 		case 17 :
-		// 			var SelectedBones = new THREE.Group();
-		// 			SelectedBones.name = 'SelectedBones';
+		// on add group event
+		newGroup.addEventListener("click",addGroupToGroupTree,false);
+		boneList.addEventListener("drop",function(e){
+			e.preventDefault();
+			var data = e.dataTransfer.getData("text");
+			this.appendChild(document.getElementById(data));
+
+			groupBones.add(groupBones.getObjectByProperty('uuid',document.getElementById(data).id));
+		});
+		boneList.addEventListener("dragover",function (e){ 
+			e.preventDefault(); 
+		});
+		boneList.addEventListener("dragend",function (e){ 
+			e.preventDefault(); 
+			var group = document.getElementsByClassName("group");
+			[].forEach.call(group, el => {
+				el.classList.replace('drop-enabled','drop-disabled');
+			});
+		});
+
+		function addGroupToGroupTree(){
+			var group = new THREE.Group();
+			groupBones.add(group);
+			var id = group.uuid;
+			var ul = document.createElement('ul');
+			ul.setAttribute("id",id);
+			ul.setAttribute("class","drop-disabled group group-deselected");
+			ul.addEventListener("dragenter",function (e){ 
+				e.preventDefault(); 
+				this.children.group_name.readOnly = false;
+				this.classList.replace('drop-disabled','drop-enabled');
+			});
+			ul.addEventListener("dragend",function (e){ 
+				e.preventDefault(); 
+				var group = document.getElementsByClassName("group");
+				[].forEach.call(group, el => {
+					el.classList.replace('drop-enabled','drop-disabled');
+				});
+			});
+			ul.addEventListener("drop",function (e) {
+				e.preventDefault();
+				this.children.group_name.readOnly = true;
+				var data = e.dataTransfer.getData("text");
+				this.insertAdjacentElement("beforeend",document.getElementById(data));
+
+				groupBones.getObjectByProperty('uuid',this.id).add(groupBones.getObjectByProperty('uuid',document.getElementById(data).id));
+			})
+			ul.addEventListener('click',function(){
+
+			})
+
+			var span = document.createElement('span');
+			span.className = "icon-bin";
+			span.addEventListener("click",function(){
+				boxHelper.setFromObject(groupBones);
+				controlObject.detach();
+				var newObjects = objects.filter(
+					function(child) {
+					  return this.indexOf(child) < 0;
+					},
+					groupBones.getObjectByProperty('uuid',this.parentElement.id).children
+				);
+				objects = [...newObjects];
+				groupBones.remove(groupBones.getObjectByProperty('uuid',this.parentElement.id));
+				this.parentElement.remove();
+			},false);
+
+			var span1 = document.createElement('span');
+			span1.className = "icon-pencil-square-o";
+			span1.addEventListener("click",function(){
+				var group_name = this.nextSibling;
+				group_name.readOnly = false;
+				group_name.focus();
+			},false);
+
+			var span2 = document.createElement('span');
+			span2.className = "icon-unlocked unlocked";
+			span2.id = "locker";
+			span2.style.pointerEvents = 'all';
+			span2.addEventListener("click",function(){
+				if(span2.className.split(' ')[0] === 'icon-unlocked' ){
+					this.classList.replace('icon-unlocked','icon-lock');
+					this.classList.replace('unlocked','locked');
+					objects = objects.filter(obj =>{
+						if(groupBones.getObjectByProperty('uuid',obj.uuid).parent.uuid == this.parentElement.id){
+							objectsLocked.push(obj);
+							boxHelper.setFromObject(groupBones.getObjectByProperty('uuid',obj.uuid).parent);
+							controlObject.attach(groupBones.getObjectByProperty('uuid',obj.uuid).parent);
+							document.getElementById(obj.uuid).draggable = false;
+							document.getElementById(obj.uuid).style.pointerEvents = 'none';
+							document.getElementById(obj.uuid).style.opacity = 0.3;
+							document.getElementById(obj.uuid).classList.replace("selected","deselected");
+						}else{
+							return obj;
+						}
+					})
+				}else{
+					this.classList.replace('icon-lock','icon-unlocked');
+					this.classList.replace('locked','unlocked');
+					objectsLocked = objectsLocked.filter(obj =>{
+						if(groupBones.getObjectByProperty('uuid',obj.uuid).parent.uuid == this.parentElement.id){
+							objects.push(obj)
+							document.getElementById(obj.uuid).draggable = true;
+							document.getElementById(obj.uuid).style.pointerEvents = 'all';
+							document.getElementById(obj.uuid).style.opacity = 1;
+						}else{
+							return obj;
+						}
+					})
+				}
+			},false);
+
+			var inputGroupName = document.createElement('input');
+			inputGroupName.type = "text";
+			inputGroupName.className = "selected"
+			inputGroupName.readOnly = true;
+			inputGroupName.name = "group_name";
+			inputGroupName.placeholder = "Group Name ...";
+
+			inputGroupName.addEventListener("change",function(e){
+				groupBones.getObjectByProperty('uuid',this.parentElement.id).name = e.target.value;
+			},false);
+			inputGroupName.addEventListener("blur",function(){
+				this.readOnly = true;
+			})
+			inputGroupName.addEventListener("click",function(e){
+				var group = document.getElementsByClassName("group");
+				[].forEach.call(group, el => {
+					el.classList.replace('group-selected','group-deselected');
+				});
+
+				var bones = document.getElementsByClassName("bone");
+				[].forEach.call(bones, el => {
+					el.classList.replace('selected','deselected');
+				});
+
+				var group = groupBones.getObjectByProperty('uuid',this.parentElement.id);   
+
+				this.parentElement.classList.replace('group-deselected','group-selected');
+				boxHelper.setFromObject(group);
+				controlObject.attach(group);
+			})
+			ul.appendChild(span2);
+			ul.appendChild(span);
+			ul.appendChild(span1);
+			ul.appendChild(inputGroupName);
+			groupTree.appendChild(ul);
+		}
 
 
-		// 		break;
+		function addBoneToTree(boneName,uuid){
+			var li = document.createElement('li');
+			li.textContent = boneName;
+			li.id = uuid;
+			li.className = "bone deselected";
+			li.setAttribute("draggable","true");
+			li.addEventListener("mouseover",function (e){
+				controls.enabled = false; controlObject.enabled = false;
+			});	
+			li.addEventListener("mouseleave",function (e){
+				controls.enabled = true; controlObject.enabled = true;
+			});	
+			li.addEventListener("dragstart",function (e){
+				e.dataTransfer.setData("text", e.target.id);
+				e.dataTransfer.setData("idparent", e.target.parentElement.id);
+			});
+			
+			/* Select Object from tree & Edit*/
+			li.addEventListener("click",function (e){
+				var boneSelected = groupBones.getObjectByProperty("uuid",e.target.id);
 
-		// 		default : false;
-		// 	}
-		// })
+				var group = document.getElementsByClassName("group");
+				[].forEach.call(group, el => {
+					el.classList.replace('group-selected','group-deselected');
+				});
 
+				var bones = document.getElementsByClassName("bone");
+				[].forEach.call(bones, el => {
+					el.classList.replace('selected','deselected');
+				});    
+				this.classList.replace("deselected","selected");
+
+				controlObject.attach(boneSelected);
+				boneEditor(boneSelected);
+				boxHelper.setFromObject(boneSelected);
+				state.selectedBone = [];
+				state.selectedBone.push(boneSelected);
+			},false);
+
+			boneList.appendChild(li);
+		}
 
 //////////////////////////////////////////////////////////////////////////////////////////
 //________________________________________________________________________________________
 /*
-#
-#
-#
-#
 #
 #
 #
