@@ -1,7 +1,7 @@
 		// chargement des textures 
 		var texture, texture3;
-		texture = new THREE.TextureLoader().load("../images/hall_ground.jpg"); 
-		texture3 = new THREE.TextureLoader().load("../images/hall_ground.png");
+		texture = new THREE.TextureLoader().load("../assets/images/hall_ground.jpg"); 
+		texture3 = new THREE.TextureLoader().load("../assets/images/hall_ground.png");
 		var camera, controls, controlObject, scene, renderer, canvas, canvas_container, gridHelper, boxHelper,
 		gui, customContainer, requestAnimation;
 		objects=[], objectsLocked=[],
@@ -21,6 +21,7 @@
 		//canvas domHtmlDocument
 		canvas = document.getElementById('renderer');
 		canvas_container = document.getElementsByClassName('renderer_container');
+		var newGroup = document.getElementsByName("new_group")[0];
 		//var dragControls, // à supprimer
 
 		
@@ -72,9 +73,23 @@
 				});
 			}
 
-
+			// importing hole
 			groupHole.copy(object.children[0]);
+
+			// importing all bones and group bones
+			console.log(object);
 			for(i = object.children[1].children.length - 1 ; i>=0 ;i--){
+				if(object.children[1].children[i].isGroup){
+					addGroupToGroupTree(null,object.children[1].children[i].uuid,object.children[1].children[i].name);
+					loadedGroup = document.getElementById(object.children[1].children[i].uuid);
+					object.children[1].children[i].traverse( function ( child ) {
+						if (child.isMesh){
+							addBoneToTree(child.name,child.uuid,false,object.children[1].children[i].uuid);
+						}
+					});
+				}else{
+					addBoneToTree(object.children[1].children[i].name,object.children[1].children[i].uuid,true,null);
+				}
 				groupBones.add(object.children[1].children[i]);
 			}
 			groupGridLevel.copy(object.children[2]);
@@ -465,7 +480,7 @@
 				type.setAttribute('class','type '+randomString());
 				type.addEventListener('click',(event) => holeType(event,item),false);
 				var img = document.createElement('img');
-				img.setAttribute('src','images/hole/'+item);
+				img.setAttribute('src','assets/images/hole/'+item);
 
 				type.appendChild(img);
 				editorContain.appendChild(type);
@@ -599,7 +614,7 @@
 					if (child.isMesh){
 						objects.push(child);
 						groupBones.add(child);
-						addBoneToTree(file.name,child.uuid);
+						addBoneToTree(file.name,child.uuid,true,null);
 					} 
 					//if ( child.isMesh ) child.material.map = texture;
 				} );
@@ -719,7 +734,6 @@
 */
 //___Bones_Tree___________________________________________________________________________
 //////////////////////////////////////////////////////////////////////////////////////////
-		var newGroup = document.getElementsByName("new_group")[0];
 
 		// on add group event
 		newGroup.addEventListener("click",addGroupToGroupTree,false);
@@ -741,10 +755,16 @@
 			});
 		});
 
-		function addGroupToGroupTree(){
-			var group = new THREE.Group();
-			groupBones.add(group);
-			var id = group.uuid;
+		function addGroupToGroupTree(a,uuid,groupname){
+			var id, group;
+			if(uuid === undefined){
+				group = new THREE.Group();
+				groupBones.add(group);
+				id = group.uuid;
+			}else{
+				id = uuid;
+			}
+			console.log(uuid);
 			var ul = document.createElement('ul');
 			ul.setAttribute("id",id);
 			ul.setAttribute("class","drop-disabled group group-deselected");
@@ -836,6 +856,7 @@
 			inputGroupName.readOnly = true;
 			inputGroupName.name = "group_name";
 			inputGroupName.placeholder = "Group Name ...";
+			groupname !== undefined ? uninputGroupName.value = groupname : uninputGroupName = '';
 
 			inputGroupName.addEventListener("change",function(e){
 				groupBones.getObjectByProperty('uuid',this.parentElement.id).name = e.target.value;
@@ -868,7 +889,7 @@
 		}
 
 
-		function addBoneToTree(boneName,uuid){
+		function addBoneToTree(boneName,uuid,tree,groupid){
 			var li = document.createElement('li');
 			li.textContent = boneName;
 			li.id = uuid;
@@ -907,7 +928,11 @@
 				state.selectedBone.push(boneSelected);
 			},false);
 
-			boneList.appendChild(li);
+			if (tree === true) boneList.appendChild(li);
+			if (tree === false){
+				group = document.getElementById(groupid);
+				group.appendChild(li);
+			}
 		}
 
 //////////////////////////////////////////////////////////////////////////////////////////
