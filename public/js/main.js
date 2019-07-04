@@ -21,6 +21,7 @@
 		//canvas domHtmlDocument
 		canvas = document.getElementById('renderer');
 		canvas_container = document.getElementsByClassName('renderer_container');
+		var newGroup = document.getElementsByName("new_group")[0];
 		//var dragControls, // à supprimer
 
 		
@@ -72,10 +73,15 @@
 				});
 			}
 
-
+			// impoting hole
 			groupHole.copy(object.children[0]);
+
+			// importing all bones
 			for(i = object.children[1].children.length - 1 ; i>=0 ;i--){
 				groupBones.add(object.children[1].children[i]);
+				if(object.children[1].children[i].type == "group"){
+					consol.log('group');
+				}
 			}
 			groupGridLevel.copy(object.children[2]);
 			closeEditor.click();
@@ -719,7 +725,6 @@
 */
 //___Bones_Tree___________________________________________________________________________
 //////////////////////////////////////////////////////////////////////////////////////////
-		var newGroup = document.getElementsByName("new_group")[0];
 
 		// on add group event
 		newGroup.addEventListener("click",addGroupToGroupTree,false);
