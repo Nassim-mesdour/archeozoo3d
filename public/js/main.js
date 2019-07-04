@@ -767,10 +767,7 @@
 				this.insertAdjacentElement("beforeend",document.getElementById(data));
 
 				groupBones.getObjectByProperty('uuid',this.id).add(groupBones.getObjectByProperty('uuid',document.getElementById(data).id));
-			})
-			ul.addEventListener('click',function(){
-
-			})
+			});
 
 			var span = document.createElement('span');
 			span.className = "icon-bin";
