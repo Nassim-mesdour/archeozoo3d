@@ -22,6 +22,8 @@
 		canvas = document.getElementById('renderer');
 		canvas_container = document.getElementsByClassName('renderer_container');
 		//var dragControls, // à supprimer
+
+		
 //////////////////////////////////////////////////////////////////////////////////////////
 //________________________________________________________________________________________
 /*
@@ -113,11 +115,11 @@
 		animateDiapo.addEventListener('click',function(){
 			state.animation.play = !state.animation.play;
 			state.animation.play ? (
-				this.children['0'].setAttribute('class','fa fa-pause-circle'),
+				this.children['0'].setAttribute('class','icon-stop2'),
 				this.style.background = "#2e76b5",
 				this.style.color = "#fff"
 			):(
-				this.children['0'].setAttribute('class','fa fa-play-circle'),
+				this.children['0'].setAttribute('class','icon-play3'),
 				this.style.background = "#fff",
 				this.style.color = "#2e76b5" 
 			);
@@ -771,7 +773,7 @@
 			})
 
 			var span = document.createElement('span');
-			span.className = "fa fa-trash-alt";
+			span.className = "icon-bin";
 			span.addEventListener("click",function(){
 				boxHelper.setFromObject(groupBones);
 				controlObject.detach();
@@ -787,7 +789,7 @@
 			},false);
 
 			var span1 = document.createElement('span');
-			span1.className = "fa fa-edit";
+			span1.className = "icon-pencil-square-o";
 			span1.addEventListener("click",function(){
 				var group_name = this.nextSibling;
 				group_name.readOnly = false;
@@ -795,12 +797,12 @@
 			},false);
 
 			var span2 = document.createElement('span');
-			span2.className = "fa fa-lock-open unlocked";
+			span2.className = "icon-unlocked unlocked";
 			span2.id = "locker";
 			span2.style.pointerEvents = 'all';
 			span2.addEventListener("click",function(){
-				if(span2.className.split(' ')[1] === 'fa-lock-open' ){
-					this.classList.replace('fa-lock-open','fa-lock');
+				if(span2.className.split(' ')[0] === 'icon-unlocked' ){
+					this.classList.replace('icon-unlocked','icon-lock');
 					this.classList.replace('unlocked','locked');
 					objects = objects.filter(obj =>{
 						if(groupBones.getObjectByProperty('uuid',obj.uuid).parent.uuid == this.parentElement.id){
@@ -816,7 +818,7 @@
 						}
 					})
 				}else{
-					this.classList.replace('fa-lock','fa-lock-open');
+					this.classList.replace('icon-lock','icon-unlocked');
 					this.classList.replace('locked','unlocked');
 					objectsLocked = objectsLocked.filter(obj =>{
 						if(groupBones.getObjectByProperty('uuid',obj.uuid).parent.uuid == this.parentElement.id){
