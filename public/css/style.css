@@ -3,6 +3,10 @@ body {
   font-family: sans-serif;
 }
 
+textarea:focus, input:focus{
+  outline: none;
+}
+
 .sidebar{
   position: absolute;
   top: 10px;
@@ -17,16 +21,16 @@ body {
 
 .topbar{
   position: absolute;
-  right: 20px;
-  top: 20px;
-  height: auto;
+  width: 248px;
+  z-index: 11;
+  right: 0;
+  text-align: center;
 }
 .topbar>div{
-  margin-left: 130px;
   padding: 3px;
   background-color: #3279b3;
   border-bottom: 2px solid #ff8900;
-  box-shadow: 0px 1px 1px 0px #000000;
+  box-shadow: 3px 1px 6px 1px #000000;
 }
 .topbar p{
   text-align: center;
@@ -102,14 +106,14 @@ body {
   position: absolute;
   z-index: -1;
   top: 0;
-  right: 0;
+  right: 248px;
   left: 0;
   bottom: 0; 
 }
 
 .renderer_container canvas{
   position: absolute;
-  height: auto !important;
+  /* height: auto !important; */
 }
 
 
@@ -243,35 +247,189 @@ body {
   left: 34px;
   border: 0;
   border-radius: 22px;
-  font-size: 42px;
+  font-size: 20px;
   font-weight: bold;
   color: #fff;
   background: #515151;
   cursor: pointer;
 }
 /* gui overStyle */
+
 #gui-container { 
-  position: absolute; 
-  z-index: 10;
-  top: 50px; 
-  right: 20px; 
-}
-
-/* controls ojects */
-
-.control-container{
-  position: absolute;
-  top: 50px;
-  right: 20px;
-  bottom: 0;
-}
-
-.control-container #controls-object{
   position: relative;
+  z-index: 10;
+  top: 50px;
+  right: 0px;
+  margin-top: 20px;
+}
+
+/* Tree Bones */
+
+#bones-control{
+  position: absolute;
+  z-index: 10;
+  right: 0;
+  top: 0;
+  bottom: 0;
   width: 245px;
-  height: 100%;
-  background: #000000cc;
-  transition: 0.2s ease;
-  transform: scale(0,1);
-  visibility: hidden;
+  background: #292929;
+  border-left: 3px solid black;
+  overflow-x: hidden;
+  overflow: overlay;
+}
+
+#bones-control::-webkit-scrollbar {
+	width: 5px;
+}
+
+#bones-control::-webkit-scrollbar-track {
+	background-color: #000000;
+}
+
+#bones-control::-webkit-scrollbar-thumb {
+	background-color: #000000;
+	border: 1px solid #555555;
+}
+
+.bones_tree{
+  position: relative;
+  background: black;
+  color: #fff;
+  z-index: 10;
+  top: 50px;
+  right: 0px;
+  padding: 10px;
+}
+
+.bones_tree>p{
+  padding: 0 0 10px;
+  margin: 0;
+  font-size: 15px;
+  text-align: center;
+}
+
+.bones_tree .groupTree>ul{
+  background-color: #292929;
+  padding-left: 0;
+  border-radius: 3px;
+  margin: 10px 0px;
+  padding: 10px 0;
+  font-size: 15px;
+  transition: 0.1s ease-in-out;
+}
+
+.bones_tree .groupTree>ul>label{
+  margin: 18px;
+  font-size: 11px;
+  position: relative;
+  top: -13px;
+  left: -18px;
+  padding: 3px;
+  background: #222222;
+  color: #ff8900;
+  font-weight: bold;
+}
+
+.bones_tree .groupTree>ul>label>input[name='move_group']{
+  cursor: pointer;
+  position: relative;
+  top: 3px;
+  right: -2px;
+}
+
+.bones_tree .groupTree>ul>span{
+  position: relative;
+  z-index: 1;
+  float: right;
+  right: 10px;
+  margin-top: 15px;
+  margin-left: 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.1s ease-in-out;
+}
+
+.bones_tree .groupTree>ul>input{
+  display: block;
+  border: 0;
+  border-left: 3px solid #3279b3;
+  background: transparent;
+  width: 110px;
+  color: #fff;
+  padding: 6px 10px;
+  margin: 10px 8px 10px;
+  cursor: pointer;
+}
+
+.bones_tree .groupTree>ul>li{
+  list-style: square;
+  list-style-position: inside;
+  padding: 7px;
+  padding-left: 18px;
+  transition: 0.1s ease-in-out;
+  cursor: pointer;
+}
+
+.bones_tree .bonesList{
+  background: #292929;
+  margin-bottom: 10px;
+  height: 100px;
+  border: 1px solid #3279b3;
+  border-radius: 3px;
+  overflow-x: hidden;
+}
+
+.bones_tree .bonesList>li{
+  list-style: circle;
+  list-style-position: inside;
+  padding: 7px;
+  padding-left: 10px;
+  transition: 0.1s ease-in-out;
+  cursor: pointer;
+}
+
+/*changing style*/
+.drop-enabled{
+  border: 3px dashed #ff8900;
+  opacity: 0.6;
+}
+.drop-disabled{
+  border: none;
+  opacity: 1;
+}
+
+.selected{
+  background-color: #171717;
+}
+.deselected{
+  background-color: none;
+}
+
+.group-selected{
+  border: 3px solid #ff8900;
+}
+.group-selected{
+  border-top: 3px solid #ff8900;
+}
+
+.locked{
+  color: #aa2727;
+}
+
+.unlocked{
+  color: #1ed36f; 
+}
+
+/* new group button style*/
+
+input[name='new_group']{
+  position: relative;
+  right: -67px;
+  border-radius: 3px;
+  font-weight: bold;
+  font-size: 13px;
+  border: none;
+  padding: 5px;
+  cursor: pointer;
+  background: #ff8900;
 }
