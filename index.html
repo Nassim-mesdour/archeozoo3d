@@ -31,16 +31,16 @@
     <div class="sidebar_top">
         <div class="flex-container">
             <div class="sub_menu_top">
-                <i class="fa fa-bone"></i>
+                <i class="icon-steam"></i>
                 <input class="upload" type="file" name="Bones" id="Bones" accept=".obj">
                 <span>Add Bones</span>
             </div>
             <div id="add_grid" class="sub_menu_top">
-                <i class="fa fa-th"></i>
+                <i class="icon-squares"></i>
                 <span>Add Grid</span>
             </div>  
             <div id="scene_animation" class="sub_menu_top">
-                <i class="fa fa-play-circle"></i>
+                <i class="icon-play3"></i>
                 <span>animate</span>
             </div>            
         </div>
@@ -51,19 +51,19 @@
     <div class="sidebar">
         <div class="flex-container">
             <div id="menu-devlop">
-                <i class="fa fa-bars"></i>
+                <i class="icon-list2"></i>
             </div>
             <div id="add_hole" class="sub_menu_lft">
-                <i class="fa fa-plus"></i>
+                <i class="icon-plus"></i>
                 <span>Add Hole</span>
             </div>
             <div id="import_scene" class="sub_menu_lft">
-                <i class="fa fa-upload"></i>
+                <i class="icon-upload2"></i>
                 <input class="upload" type="file" name="project" id="project" accept=".json">
                 <span>Load Project</span>
             </div> 
             <div id="export_scene" class="sub_menu_lft">
-                <i class="fa fa-download"></i>
+                <i class="icon-download2"></i>
                 <span>Save Project</span>
             </div>
             </div>                    
@@ -76,13 +76,18 @@
     </div>
 
     <div class='editor'>
-        <i id="enable" class="fa fa-times-circle"></i>
+        <i id="enable" class="icon-cross"></i>
         
     </div>
 
-    <div id="gui-container"></div>
-    <div class="control-container">
-        <div id="controls-object"></div>
+    <div id="bones-control">
+        <div id="bones-tree" class="bones_tree">
+            <p>Grouping Bones</p>
+            <div id="bonesList" class="bonesList"></div>
+            <div id="groupTree" class="groupTree"></div>
+            <input type="button" value="+ New Group" name="new_group">
+        </div>
+        <div id="gui-container"></div>
     </div>
     <script src="public/js/main.js"></script>
 </body>
