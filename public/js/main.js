@@ -465,7 +465,7 @@
 				type.setAttribute('class','type '+randomString());
 				type.addEventListener('click',(event) => holeType(event,item),false);
 				var img = document.createElement('img');
-				img.setAttribute('src','images/hole/'+item);
+				img.setAttribute('src','public/assets/images/hole/'+item);
 
 				type.appendChild(img);
 				editorContain.appendChild(type);
