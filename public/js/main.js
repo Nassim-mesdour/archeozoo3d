@@ -73,15 +73,24 @@
 				});
 			}
 
-			// impoting hole
+			// importing hole
 			groupHole.copy(object.children[0]);
 
-			// importing all bones
+			// importing all bones and group bones
+			console.log(object);
 			for(i = object.children[1].children.length - 1 ; i>=0 ;i--){
-				groupBones.add(object.children[1].children[i]);
-				if(object.children[1].children[i].type == "group"){
-					consol.log('group');
+				if(object.children[1].children[i].isGroup){
+					addGroupToGroupTree(null,object.children[1].children[i].uuid,object.children[1].children[i].name);
+					loadedGroup = document.getElementById(object.children[1].children[i].uuid);
+					object.children[1].children[i].traverse( function ( child ) {
+						if (child.isMesh){
+							addBoneToTree(child.name,child.uuid,false,object.children[1].children[i].uuid);
+						}
+					});
+				}else{
+					addBoneToTree(object.children[1].children[i].name,object.children[1].children[i].uuid,true,null);
 				}
+				groupBones.add(object.children[1].children[i]);
 			}
 			groupGridLevel.copy(object.children[2]);
 			closeEditor.click();
@@ -605,7 +614,7 @@
 					if (child.isMesh){
 						objects.push(child);
 						groupBones.add(child);
-						addBoneToTree(file.name,child.uuid);
+						addBoneToTree(file.name,child.uuid,true,null);
 					} 
 					//if ( child.isMesh ) child.material.map = texture;
 				} );
@@ -746,10 +755,16 @@
 			});
 		});
 
-		function addGroupToGroupTree(){
-			var group = new THREE.Group();
-			groupBones.add(group);
-			var id = group.uuid;
+		function addGroupToGroupTree(a,uuid,groupname){
+			var id, group;
+			if(uuid === undefined){
+				group = new THREE.Group();
+				groupBones.add(group);
+				id = group.uuid;
+			}else{
+				id = uuid;
+			}
+			console.log(uuid);
 			var ul = document.createElement('ul');
 			ul.setAttribute("id",id);
 			ul.setAttribute("class","drop-disabled group group-deselected");
@@ -772,7 +787,7 @@
 				this.insertAdjacentElement("beforeend",document.getElementById(data));
 
 				groupBones.getObjectByProperty('uuid',this.id).add(groupBones.getObjectByProperty('uuid',document.getElementById(data).id));
-			});
+			})
 
 			var span = document.createElement('span');
 			span.className = "icon-bin";
@@ -841,6 +856,7 @@
 			inputGroupName.readOnly = true;
 			inputGroupName.name = "group_name";
 			inputGroupName.placeholder = "Group Name ...";
+			groupname !== undefined ? inputGroupName.value = groupname : inputGroupName = '';
 
 			inputGroupName.addEventListener("change",function(e){
 				groupBones.getObjectByProperty('uuid',this.parentElement.id).name = e.target.value;
@@ -873,7 +889,7 @@
 		}
 
 
-		function addBoneToTree(boneName,uuid){
+		function addBoneToTree(boneName,uuid,tree,groupid){
 			var li = document.createElement('li');
 			li.textContent = boneName;
 			li.id = uuid;
@@ -912,7 +928,11 @@
 				state.selectedBone.push(boneSelected);
 			},false);
 
-			boneList.appendChild(li);
+			if (tree === true) boneList.appendChild(li);
+			if (tree === false){
+				group = document.getElementById(groupid);
+				group.appendChild(li);
+			}
 		}
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -964,4 +984,4 @@
 #
 */
 //________________________________________________________________________________________
-//////////////////////////////////////////////////////////////////////////////////////////   
+//////////////////////////////////////////////////////////////////////////////////////////
