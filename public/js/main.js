@@ -855,7 +855,7 @@
 			inputGroupName.readOnly = true;
 			inputGroupName.name = "group_name";
 			inputGroupName.placeholder = "Group Name ...";
-			groupname !== undefined ? inputGroupName.value = groupname : inputGroupName = '';
+			groupname !== undefined ? inputGroupName.value = groupname : inputGroupName.value = '';
 
 			inputGroupName.addEventListener("change",function(e){
 				groupBones.getObjectByProperty('uuid',this.parentElement.id).name = e.target.value;
