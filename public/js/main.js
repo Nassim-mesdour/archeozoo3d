@@ -239,8 +239,7 @@
 		}
 		function animate(){
 			requestAnimation = requestAnimationFrame( animate );
-			state.animation.play ? (gridHelper.rotation.y += 0.005) : 
-									(gridHelper.rotation.y = gridHelper.rotation.y);
+			state.animation.play ? controls.autoRotate = true : controls.autoRotate = false;
 			boxHelper.update();
 			controls.update(); // only required if controls.enableDamping = true, or if controls.autoRotate = true
 			renderer.render( scene, camera );
