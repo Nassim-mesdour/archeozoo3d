@@ -2,6 +2,7 @@
 		var texture, texture3;
 		texture = new THREE.TextureLoader().load("./public/assets/images/hall_ground.jpg"); 
 		texture3 = new THREE.TextureLoader().load("./public/assets/images/hall_ground.png");
+		// global variables
 		var camera, controls, controlObject, scene, renderer, canvas, canvas_container, gridHelper, boxHelper,
 		gui, customContainer, requestAnimation;
 		objects=[], objectsLocked=[],
@@ -22,21 +23,7 @@
 		canvas = document.getElementById('renderer');
 		canvas_container = document.getElementsByClassName('renderer_container');
 		var newGroup = document.getElementsByName("new_group")[0];
-		//var dragControls, // à supprimer
 
-		
-//////////////////////////////////////////////////////////////////////////////////////////
-//________________________________________________________________________________________
-/*
-#
-#
-#
-#
-#
-#
-#
-#
-*/
 //__Load project__________________________________________________________________________
 //////////////////////////////////////////////////////////////////////////////////////////
 
@@ -110,18 +97,6 @@
 
 	},false);
 
-//////////////////////////////////////////////////////////////////////////////////////////
-//________________________________________________________________________________________
-/*
-#
-#
-#
-#
-#
-#
-#
-#
-*/
 //__start editor__________________________________________________________________________
 //////////////////////////////////////////////////////////////////////////////////////////
 
@@ -198,17 +173,6 @@
 			gridHelper.add(groupGridLevel);
 			gridHelper.add(axesHelper);
 			scene.add(gridHelper);
-
-			// !!!!!!! a supprimer
-			//Stop orbit control when draging objects 
-			// dragControls = new THREE.DragControls( objects, camera, canvas );
-			// dragControls.addEventListener( 'dragstart', function () {
-			// 	controls.enabled = false;
-			// },false);
-
-			// dragControls.addEventListener( 'dragend', function () {
-			// 	controls.enabled = true;
-			// },false);
 			
 			//box helper
 			boxHelper = new THREE.BoxHelper(groupBones, 0xff8900);
@@ -239,25 +203,12 @@
 		}
 		function animate(){
 			requestAnimation = requestAnimationFrame( animate );
-			state.animation.play ? (gridHelper.rotation.y += 0.005) : 
-									(gridHelper.rotation.y = gridHelper.rotation.y);
+			state.animation.play ? controls.autoRotate = true : controls.autoRotate = false;
 			boxHelper.update();
 			controls.update(); // only required if controls.enableDamping = true, or if controls.autoRotate = true
 			renderer.render( scene, camera );
 		}
 
-//////////////////////////////////////////////////////////////////////////////////////////
-//________________________________________________________________________________________
-/*
-#
-#
-#
-#
-#
-#
-#
-#
-*/
 //__disable_editor_animation______________________________________________________________
 //////////////////////////////////////////////////////////////////////////////////////////
 		var styeleState = {
@@ -355,18 +306,6 @@
 			element.children[1] ? element.children[1].remove() : false;
 		},false);
 	
-//////////////////////////////////////////////////////////////////////////////////////////
-//________________________________________________________________________________________
-/*
-#
-#
-#
-#
-#
-#
-#
-#
-*/
 //__Holes Controls________________________________________________________________________
 //////////////////////////////////////////////////////////////////////////////////////////
 
@@ -557,15 +496,6 @@
 		addHole.addEventListener('click',() => openHoleSelector(),false)
 		
 
-
-//////////////////////////////////////////////////////////////////////////////////////////
-//________________________________________________________________________________________
-/*
-#
-#
-#
-#
-*/
 //__hole_level____________________________________________________________________________
 //////////////////////////////////////////////////////////////////////////////////////////	
 		
@@ -583,16 +513,9 @@
 			closeEditor.click();
 		}
 
-//////////////////////////////////////////////////////////////////////////////////////////
-//________________________________________________________________________________________
-/*
-#
-#
-#
-#
-*/
 //__Bones_Controls________________________________________________________________________
 //////////////////////////////////////////////////////////////////////////////////////////
+
 		var guiFoldetState = { // memorize gui folders
 			objectSlected : undefined,
 			open : true
@@ -724,14 +647,6 @@
 			// } 
 		}
 		
-//////////////////////////////////////////////////////////////////////////////////////////
-//________________________________________________________________________________________
-/*
-#
-#
-#
-#
-*/
 //___Bones_Tree___________________________________________________________________________
 //////////////////////////////////////////////////////////////////////////////////////////
 
@@ -856,7 +771,7 @@
 			inputGroupName.readOnly = true;
 			inputGroupName.name = "group_name";
 			inputGroupName.placeholder = "Group Name ...";
-			groupname !== undefined ? inputGroupName.value = groupname : inputGroupName = '';
+			groupname !== undefined ? inputGroupName.value = groupname : inputGroupName.value = '';
 
 			inputGroupName.addEventListener("change",function(e){
 				groupBones.getObjectByProperty('uuid',this.parentElement.id).name = e.target.value;
@@ -935,14 +850,6 @@
 			}
 		}
 
-//////////////////////////////////////////////////////////////////////////////////////////
-//________________________________________________________________________________________
-/*
-#
-#
-#
-#
-*/
 //___Scene_Exporter_______________________________________________________________________
 //////////////////////////////////////////////////////////////////////////////////////////
 
@@ -969,19 +876,5 @@
 		function saveString( text, filename ) {
 			save( new Blob( [JSON.stringify(text, null, 2)] , { type: 'application/json' } ), filename );
 		}
-
-
-//////////////////////////////////////////////////////////////////////////////////////////
-//________________________________________________________________________________________
-/*
-#
-#
-#
-#
-#
-#
-#
-#
-*/
 //________________________________________________________________________________________
 //////////////////////////////////////////////////////////////////////////////////////////
