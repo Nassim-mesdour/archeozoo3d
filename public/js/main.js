@@ -385,7 +385,7 @@
 					groupHole.add(holePlane);
 
 					groundGeo = new THREE.RingBufferGeometry( 141.4213562373095, 200,4, 1,Math.PI * 0.75);
-					groundPlane = new THREE.Mesh(groundGeo, new THREE.MeshPhongMaterial({map: texture, side: THREE.DoubleSide}) );
+					groundPlane = new THREE.Mesh(groundGeo, new THREE.MeshPhongMaterial({map: texture, opacity: 1, transparent: true, side: THREE.DoubleSide}) );
 					groundPlane.translateY(100);
 					groundPlane.rotateX(Math.PI * -0.5);	
 					groupHole.add( groundPlane );
@@ -403,7 +403,7 @@
 					groupHole.add(holePlane);
 					
 					groundGeo = new THREE.RingBufferGeometry( 100, 150, 80 );
-					groundPlane = new THREE.Mesh(groundGeo, new THREE.MeshPhongMaterial({map: texture, side: THREE.DoubleSide}) );
+					groundPlane = new THREE.Mesh(groundGeo, new THREE.MeshPhongMaterial({map: texture, opacity: 1, transparent: true, side: THREE.DoubleSide}) );
 					groundPlane.translateY(100);
 					groundPlane.rotateX(Math.PI * -0.5);
 					groupHole.add(groundPlane);
@@ -416,7 +416,7 @@
 					groupHole.add(holePlane);
 
 					groundGeo = new THREE.RingBufferGeometry( 141.4213562373095, 200,4, 1,Math.PI * 0.75);
-					groundPlane = new THREE.Mesh( groundGeo, new THREE.MeshPhongMaterial({map: texture, side: THREE.DoubleSide}) );
+					groundPlane = new THREE.Mesh( groundGeo, new THREE.MeshPhongMaterial({map: texture, opacity: 1, transparent: true, side: THREE.DoubleSide}) );
 					groundPlane.translateY(100);
 					groundPlane.rotateX(Math.PI * -0.5);	
 					groupHole.add( groundPlane );
