@@ -17,10 +17,28 @@ app.on('ready',function(){
         protocol : 'file',
         slashes : true,
     }));
-
+    mainWindow.on("closed",function(){
+        mainWindow = null;
+    })
     const menu = Menu.buildFromTemplate(menuTemplate);
     Menu.setApplicationMenu(menu);
 });
+
+app.on('window-all-closed', function() {
+    // On OS X it is common for applications and their menu bar
+    // to stay active until the user quits explicitly with Cmd + Q
+    if (process.platform !== 'darwin') {
+      app.quit()
+    }
+  })
+  
+  app.on('activate', function() {
+    // On OS X it's common to re-create a window in the app when the
+    // dock icon is clicked and there are no other windows open.
+    if (mainWindow === null) {
+      createWindow()
+    }
+  })
 
 
 // add menu top bar // -------------------------
@@ -44,7 +62,20 @@ const menuTemplate = [
         label: 'Fichier',
         submenu : [
             {
-                label : 'Nouveau Projet'
+                label : 'Nouveau Projet',
+                click(){
+                    // const {shell} = require('electron') // deconstructing assignment
+
+                    // shell.openItem('filepath')
+                    // shell.openItem('folderpath')
+                    var filePath = __dirname;
+                    electron.dialog.showOpenDialog({
+                    properties:['openFile'],
+                    filters:[
+                        {name:'Log', extentions:['csv', 'log']}
+                    ]
+                    });
+                }
             },
             {
                 label : 'Nouvelle fenêtre'
