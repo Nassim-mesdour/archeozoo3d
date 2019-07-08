@@ -327,6 +327,7 @@
 			closeHoleSelector();
 			var prams = {
 				visible : false,
+				opacity : 1,
 				delete:function(){
 					var i = groupHole.children.length -1;
 					for(i ; i>=0 ; i--){
@@ -359,6 +360,13 @@
 				hole.add(groupHole.scale, 'z', 1, 6).name('Height').onChange(function(e){
 					groupGridLevel.scale.z = e;
 				});
+				hole.add(prams,'opacity',0,1).name('Opacity').onChange(function(e){
+					groupHole.children.forEach(function(pchild){
+						pchild.traverse(function(child){
+							if(child.isMesh) child.material.opacity = e;
+						});
+					});
+				});
 				hole.add(groupHole, 'visible', [false, true]).onChange(function(value){
 					value == "true" ? groupHole.visible = true : groupHole.visible = false;
 				});
@@ -377,13 +385,13 @@
 					groupHole.add(holePlane);
 
 					groundGeo = new THREE.RingBufferGeometry( 141.4213562373095, 200,4, 1,Math.PI * 0.75);
-					groundPlane = new THREE.Mesh( groundGeo, new THREE.MeshPhongMaterial({map: texture, side: THREE.DoubleSide}) );
+					groundPlane = new THREE.Mesh(groundGeo, new THREE.MeshPhongMaterial({map: texture, side: THREE.DoubleSide}) );
 					groundPlane.translateY(100);
 					groundPlane.rotateX(Math.PI * -0.5);	
 					groupHole.add( groundPlane );
 					
 				break;
-				case "cylinder.png" :
+				case "cylinder.png":
 					holeBaseGeo = new THREE.CircleBufferGeometry( 100, 128 );
 					cylBasePlane = new THREE.Mesh(holeBaseGeo, new THREE.MeshPhongMaterial({map: texture3, opacity: 0.9, transparent: true, side: THREE.DoubleSide}) );
 					cylBasePlane.rotateX(Math.PI * 0.5);
@@ -391,7 +399,7 @@
 
 					holeGeo = new THREE.CylinderBufferGeometry( 100, 100, 100, 64 ,0,true);
 					holePlane = new THREE.Mesh(holeGeo, new THREE.MeshPhongMaterial({map: texture3, opacity: 0.9, transparent: true, side: THREE.DoubleSide}) );
-					holePlane.translateY(50)
+					holePlane.translateY(50);
 					groupHole.add(holePlane);
 					
 					groundGeo = new THREE.RingBufferGeometry( 100, 150, 80 );
@@ -400,14 +408,18 @@
 					groundPlane.rotateX(Math.PI * -0.5);
 					groupHole.add(groundPlane);
 				break;
-
-				case "halfcyl.png" : 
-
-					holeGeo = new THREE.CylinderBufferGeometry( 100, 100, 100, 64 ,0,true,0,3);
+				case "halfcyl.png": 
+					holeGeo = new THREE.CylinderBufferGeometry( 100, 100, 200, 64 ,0,false,0,3.15);
 					holePlane = new THREE.Mesh(holeGeo, new THREE.MeshPhongMaterial({map: texture3, opacity: 0.9, transparent: true, side: THREE.DoubleSide}) );
-					holePlane.translateY(50)
+					holePlane.translateY(100);
+					holePlane.rotateZ(Math.PI * -0.5);
 					groupHole.add(holePlane);
 
+					groundGeo = new THREE.RingBufferGeometry( 141.4213562373095, 200,4, 1,Math.PI * 0.75);
+					groundPlane = new THREE.Mesh( groundGeo, new THREE.MeshPhongMaterial({map: texture, side: THREE.DoubleSide}) );
+					groundPlane.translateY(100);
+					groundPlane.rotateX(Math.PI * -0.5);	
+					groupHole.add( groundPlane );
 				break;
 
 				default:
