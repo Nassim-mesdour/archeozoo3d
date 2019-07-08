@@ -174,17 +174,6 @@
 			gridHelper.add(groupGridLevel);
 			gridHelper.add(axesHelper);
 			scene.add(gridHelper);
-
-			// !!!!!!! a supprimer
-			//Stop orbit control when draging objects 
-			// dragControls = new THREE.DragControls( objects, camera, canvas );
-			// dragControls.addEventListener( 'dragstart', function () {
-			// 	controls.enabled = false;
-			// },false);
-
-			// dragControls.addEventListener( 'dragend', function () {
-			// 	controls.enabled = true;
-			// },false);
 			
 			//box helper
 			boxHelper = new THREE.BoxHelper(groupBones, 0xff8900);
@@ -321,7 +310,7 @@
 //__Holes Controls________________________________________________________________________
 //////////////////////////////////////////////////////////////////////////////////////////
 
-		var  imageHole=['geometry.png','cylinder.png'],
+		var  imageHole=['geometry.png','cylinder.png','halfcyl.png'],
 		sceneState = {
 			holeType : ""
 		}
@@ -394,7 +383,7 @@
 					groupHole.add( groundPlane );
 					
 				break;
-				case "cylinder.png":
+				case "cylinder.png" :
 					holeBaseGeo = new THREE.CircleBufferGeometry( 100, 128 );
 					cylBasePlane = new THREE.Mesh(holeBaseGeo, new THREE.MeshPhongMaterial({map: texture3, opacity: 0.9, transparent: true, side: THREE.DoubleSide}) );
 					cylBasePlane.rotateX(Math.PI * 0.5);
@@ -412,6 +401,15 @@
 					groupHole.add(groundPlane);
 				break;
 
+				case "halfcyl.png" : 
+
+					holeGeo = new THREE.CylinderBufferGeometry( 100, 100, 100, 64 ,0,true,0,3);
+					holePlane = new THREE.Mesh(holeGeo, new THREE.MeshPhongMaterial({map: texture3, opacity: 0.9, transparent: true, side: THREE.DoubleSide}) );
+					holePlane.translateY(50)
+					groupHole.add(holePlane);
+
+				break;
+
 				default:
 					break;
 			}
@@ -420,7 +418,7 @@
 
 		/* hole selector interface */
 		openHoleSelector = () => {
-			if(editor.childElementCount === 2){
+			if(editor.childElementCount === 3){
 				return;
 			}
 			var editorContain = document.createElement('div');
