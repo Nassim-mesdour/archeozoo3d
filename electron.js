@@ -76,9 +76,6 @@ const menuTemplate = [
                     ]
                     });
                 }
-            },
-            {
-                label : 'Nouvelle fenêtre'
             }
         ]
     }
